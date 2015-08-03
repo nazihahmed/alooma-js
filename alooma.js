@@ -1,8 +1,6 @@
 /*
- * Mixpanel JS Library v2.5.1
+ * Alooma JS Library v0.1.0
  *
- * Copyright 2012, Mixpanel, Inc. All Rights Reserved
- * http://mixpanel.com/
  *
  * Includes portions of Underscore.js
  * http://documentcloud.github.com/underscore/
@@ -12,11 +10,11 @@
 
 // ==ClosureCompiler==
 // @compilation_level ADVANCED_OPTIMIZATIONS
-// @output_file_name mixpanel-2.5.min.js
+// @output_file_name alooma-0.1.min.js
 // ==/ClosureCompiler==
 
 /*
-Will export window.mixpanel
+Will export window.alooma
 */
 
 /*
@@ -28,7 +26,7 @@ this.__x == private - only use within the class
 
 Globals should be all caps
 */
-(function (mixpanel) {
+(function (alooma) {
 
 /*
  * Saved references to long variable names, so that closure compiler can
@@ -48,7 +46,7 @@ Globals should be all caps
 /*
  * Constants
  */
-/** @const */   var   PRIMARY_INSTANCE_NAME     = "mixpanel"
+/** @const */   var   PRIMARY_INSTANCE_NAME     = "alooma"
 /** @const */       , SET_QUEUE_KEY             = "__mps"
 /** @const */       , SET_ONCE_QUEUE_KEY        = "__mpso"
 /** @const */       , ADD_QUEUE_KEY             = "__mpa"
@@ -80,7 +78,7 @@ Globals should be all caps
     var HTTP_PROTOCOL = (("https:" == document.location.protocol) ? "https://" : "http://"),
 
         LIB_VERSION = '2.5.1',
-        SNIPPET_VERSION = (mixpanel && mixpanel['__SV']) || 0,
+        SNIPPET_VERSION = (alooma && alooma['__SV']) || 0,
 
         // http://hacks.mozilla.org/2009/07/cross-site-xmlhttprequest-with-cors/
         // https://developer.mozilla.org/en-US/docs/DOM/XMLHttpRequest#withCredentials
@@ -97,7 +95,7 @@ Globals should be all caps
     var   _ = {}
         , DEBUG = false
         , DEFAULT_CONFIG = {
-              "api_host":               HTTP_PROTOCOL + 'api.mixpanel.com'
+              "api_host":               HTTP_PROTOCOL + 'api.alooma.com'
             , "cross_subdomain_cookie": true
             , "persistence":            "cookie"
             , "persistence_name":       ""
@@ -321,7 +319,7 @@ Globals should be all caps
             try {
                 f.apply(this, arguments);
             } catch(e) {
-                console.critical('Implementation error. Please contact support@mixpanel.com.');
+                console.critical('Implementation error. Please contact support@alooma.com.');
             }
         };
     };
@@ -996,7 +994,7 @@ Globals should be all caps
         // written by Dean Edwards, 2005
         // with input from Tino Zijdel - crisp@xs4all.nl
         // with input from Carl Sverre - mail@carlsverre.com
-        // with input from Mixpanel
+        // with input from Alooma
         // http://dean.edwards.name/weblog/2005/10/add-event/
         // https://gist.github.com/1930440
 
@@ -1455,7 +1453,7 @@ Globals should be all caps
         /** @type {function(...[*])} */
         error: function() {
             if (DEBUG && !_.isUndefined(windowConsole) && windowConsole) {
-                var args = ["Mixpanel error:"].concat(_.toArray(arguments));
+                var args = ["Alooma error:"].concat(_.toArray(arguments));
                 try {
                     windowConsole.error.apply(windowConsole, args);
                 } catch(err) {
@@ -1468,7 +1466,7 @@ Globals should be all caps
         /** @type {function(...[*])} */
         critical: function() {
             if (!_.isUndefined(windowConsole) && windowConsole) {
-                var args = ["Mixpanel error:"].concat(_.toArray(arguments));
+                var args = ["Alooma error:"].concat(_.toArray(arguments));
                 try {
                     windowConsole.error.apply(windowConsole, args);
                 } catch(err) {
@@ -1491,8 +1489,8 @@ Globals should be all caps
     DomTracker.prototype.event_handler = function() {};
     DomTracker.prototype.after_track_handler = function() {};
 
-    DomTracker.prototype.init = function(mixpanel_instance) {
-        this.mp = mixpanel_instance;
+    DomTracker.prototype.init = function(alooma_instance) {
+        this.mp = alooma_instance;
         return this;
     };
 
@@ -1519,7 +1517,7 @@ Globals should be all caps
 
                 that.event_handler(e, this, options);
 
-                // in case the mixpanel servers don't get back to us in time
+                // in case the alooma servers don't get back to us in time
                 window.setTimeout(that.track_callback(user_callback, props, options, true), timeout);
 
                 // fire the tracking event
@@ -1629,17 +1627,17 @@ Globals should be all caps
     };
 
     /**
-     * Mixpanel Persistence Object
+     * Alooma Persistence Object
      * @constructor
      */
-    var MixpanelPersistence = function(config) {
+    var AloomaPersistence = function(config) {
         this['props'] = {};
         this.campaign_params_saved = false;
 
         if (config['persistence_name']) {
             this.name = "mp_" + config['persistence_name'];
         } else {
-            this.name = "mp_" + config['token'] + "_mixpanel";
+            this.name = "mp_" + config['token'] + "_alooma";
         }
 
         var storage_type = config['persistence'];
@@ -1678,7 +1676,7 @@ Globals should be all caps
         this.save();
     };
 
-    MixpanelPersistence.prototype.properties = function() {
+    AloomaPersistence.prototype.properties = function() {
         var p = {};
         // Filter out reserved properties
         _.each(this['props'], function(v, k) {
@@ -1689,7 +1687,7 @@ Globals should be all caps
         return p;
     };
 
-    MixpanelPersistence.prototype.load = function() {
+    AloomaPersistence.prototype.load = function() {
         if (this.disabled) { return; }
 
         var entry = this.storage.parse(this.name);
@@ -1699,7 +1697,7 @@ Globals should be all caps
         }
     };
 
-    MixpanelPersistence.prototype.upgrade = function(config) {
+    AloomaPersistence.prototype.upgrade = function(config) {
         var upgrade_from_old_lib = config['upgrade'],
             old_cookie_name,
             old_cookie;
@@ -1726,7 +1724,7 @@ Globals should be all caps
             }
         }
 
-        if (!config['cookie_name'] && config['name'] !== 'mixpanel') {
+        if (!config['cookie_name'] && config['name'] !== 'alooma') {
             // special case to handle people with cookies of the form
             // mp_TOKEN_INSTANCENAME from the first release of this library
             old_cookie_name = "mp_" + config['token'] + "_" + config['name'];
@@ -1754,7 +1752,7 @@ Globals should be all caps
         }
     };
 
-    MixpanelPersistence.prototype.save = function() {
+    AloomaPersistence.prototype.save = function() {
         if (this.disabled) { return; }
         this._expire_notification_campaigns();
         this.storage.set(
@@ -1766,7 +1764,7 @@ Globals should be all caps
         );
     };
 
-    MixpanelPersistence.prototype.remove = function() {
+    AloomaPersistence.prototype.remove = function() {
         // remove both domain and subdomain cookies
         this.storage.remove(this.name, false);
         this.storage.remove(this.name, true);
@@ -1774,7 +1772,7 @@ Globals should be all caps
 
     // removes the storage entry and deletes all loaded data
     // forced name for tests
-    MixpanelPersistence.prototype.clear = function() {
+    AloomaPersistence.prototype.clear = function() {
         this.remove();
         this['props'] = {};
     };
@@ -1784,7 +1782,7 @@ Globals should be all caps
      * @param {*=} default_value
      * @param {number=} days
      */
-    MixpanelPersistence.prototype.register_once = function(props, default_value, days) {
+    AloomaPersistence.prototype.register_once = function(props, default_value, days) {
         if (_.isObject(props)) {
             if (typeof(default_value) === 'undefined') { default_value = "None"; }
             this.expire_days = (typeof(days) === 'undefined') ? this.default_expiry : days;
@@ -1806,7 +1804,7 @@ Globals should be all caps
      * @param {Object} props
      * @param {number=} days
      */
-    MixpanelPersistence.prototype.register = function(props, days) {
+    AloomaPersistence.prototype.register = function(props, days) {
         if (_.isObject(props)) {
             this.expire_days = (typeof(days) === 'undefined') ? this.default_expiry : days;
 
@@ -1819,14 +1817,14 @@ Globals should be all caps
         return false;
     };
 
-    MixpanelPersistence.prototype.unregister = function(prop) {
+    AloomaPersistence.prototype.unregister = function(prop) {
         if (prop in this['props']) {
             delete this['props'][prop];
             this.save();
         }
     };
 
-    MixpanelPersistence.prototype._expire_notification_campaigns = _.safewrap(function() {
+    AloomaPersistence.prototype._expire_notification_campaigns = _.safewrap(function() {
         var campaigns_shown = this['props'][CAMPAIGN_IDS_KEY],
             EXPIRY_TIME = DEBUG ? 60 * 1000 : 60 * 60 * 1000; // 1 minute (DEBUG) / 1 hour (PDXN)
         if (!campaigns_shown) {
@@ -1842,19 +1840,19 @@ Globals should be all caps
         }
     });
 
-    MixpanelPersistence.prototype.update_campaign_params = function() {
+    AloomaPersistence.prototype.update_campaign_params = function() {
         if (!this.campaign_params_saved) {
             this.register_once(_.info.campaignParams());
             this.campaign_params_saved = true;
         }
     };
 
-    MixpanelPersistence.prototype.update_search_keyword = function(referrer) {
+    AloomaPersistence.prototype.update_search_keyword = function(referrer) {
         this.register(_.info.searchInfo(referrer));
     };
 
     // EXPORTED METHOD, we test this directly.
-    MixpanelPersistence.prototype.update_referrer_info = function(referrer) {
+    AloomaPersistence.prototype.update_referrer_info = function(referrer) {
         // If referrer doesn't exist, we want to note the fact that it was type-in traffic.
         this.register_once({
             "$initial_referrer": referrer || "$direct",
@@ -1862,7 +1860,7 @@ Globals should be all caps
         }, "");
     };
 
-    MixpanelPersistence.prototype.get_referrer_info = function() {
+    AloomaPersistence.prototype.get_referrer_info = function() {
         return _.strip_empty_properties({
             '$initial_referrer': this['props']['$initial_referrer'],
             '$initial_referring_domain': this['props']['$initial_referring_domain']
@@ -1872,7 +1870,7 @@ Globals should be all caps
     // safely fills the passed in object with stored properties,
     // does not override any properties defined in both
     // returns the passed in object
-    MixpanelPersistence.prototype.safe_merge = function(props) {
+    AloomaPersistence.prototype.safe_merge = function(props) {
         _.each(this['props'], function(val, prop) {
             if (!(prop in props)) {
                 props[prop] = val;
@@ -1882,21 +1880,21 @@ Globals should be all caps
         return props;
     };
 
-    MixpanelPersistence.prototype.update_config = function(config) {
+    AloomaPersistence.prototype.update_config = function(config) {
         this.default_expiry = this.expire_days = config['cookie_expiration'];
         this.set_disabled(config['disable_persistence']);
         this.set_cross_subdomain(config['cross_subdomain_cookie']);
         this.set_secure(config['secure_cookie']);
     };
 
-    MixpanelPersistence.prototype.set_disabled = function(disabled) {
+    AloomaPersistence.prototype.set_disabled = function(disabled) {
         this.disabled = disabled;
         if (this.disabled) {
             this.remove();
         }
     };
 
-    MixpanelPersistence.prototype.set_cross_subdomain = function(cross_subdomain) {
+    AloomaPersistence.prototype.set_cross_subdomain = function(cross_subdomain) {
         if (cross_subdomain !== this.cross_subdomain) {
             this.cross_subdomain = cross_subdomain;
             this.remove();
@@ -1904,11 +1902,11 @@ Globals should be all caps
         }
     };
 
-    MixpanelPersistence.prototype.get_cross_subdomain = function() {
+    AloomaPersistence.prototype.get_cross_subdomain = function() {
         return this.cross_subdomain;
     };
 
-    MixpanelPersistence.prototype.set_secure = function(secure) {
+    AloomaPersistence.prototype.set_secure = function(secure) {
         if (secure !== this.secure) {
             this.secure = secure ? true : false;
             this.remove();
@@ -1916,7 +1914,7 @@ Globals should be all caps
         }
     };
 
-    MixpanelPersistence.prototype._add_to_people_queue = function(queue, data) {
+    AloomaPersistence.prototype._add_to_people_queue = function(queue, data) {
         var q_key = this._get_queue_key(queue),
             q_data = data[queue],
             set_q = this._get_or_create_queue(SET_ACTION),
@@ -1970,13 +1968,13 @@ Globals should be all caps
             append_q.push(q_data);
         }
 
-        console.log("MIXPANEL PEOPLE REQUEST (QUEUED, PENDING IDENTIFY):");
+        console.log("ALOOMA PEOPLE REQUEST (QUEUED, PENDING IDENTIFY):");
         console.log(data);
 
         this.save();
     };
 
-    MixpanelPersistence.prototype._pop_from_people_queue = function(queue, data) {
+    AloomaPersistence.prototype._pop_from_people_queue = function(queue, data) {
         var q = this._get_queue(queue);
         if (!_.isUndefined(q)) {
             _.each(data, function(v, k) {
@@ -1987,7 +1985,7 @@ Globals should be all caps
         }
     };
 
-    MixpanelPersistence.prototype._get_queue_key = function(queue) {
+    AloomaPersistence.prototype._get_queue_key = function(queue) {
         if (queue === SET_ACTION) {
             return SET_QUEUE_KEY;
         } else if (queue === SET_ONCE_ACTION) {
@@ -2003,10 +2001,10 @@ Globals should be all caps
         }
     };
 
-    MixpanelPersistence.prototype._get_queue = function(queue) {
+    AloomaPersistence.prototype._get_queue = function(queue) {
         return this['props'][this._get_queue_key(queue)];
     };
-    MixpanelPersistence.prototype._get_or_create_queue = function(queue, default_val) {
+    AloomaPersistence.prototype._get_or_create_queue = function(queue, default_val) {
         var key = this._get_queue_key(queue),
             default_val = _.isUndefined(default_val) ? {} : default_val;
 
@@ -2016,23 +2014,23 @@ Globals should be all caps
     /**
      * create_mplib(token:string, config:object, name:string)
      *
-     * This function is used by the init method of MixpanelLib objects
+     * This function is used by the init method of AloomaLib objects
      * as well as the main initializer at the end of the JSLib (that
-     * initializes document.mixpanel as well as any additional instances
+     * initializes document.alooma as well as any additional instances
      * declared before this file has loaded).
      */
     var create_mplib = function(token, config, name) {
-        var instance, target = (name === PRIMARY_INSTANCE_NAME) ? mixpanel : mixpanel[name];
+        var instance, target = (name === PRIMARY_INSTANCE_NAME) ? alooma : alooma[name];
 
         if (target && !_.isArray(target)) {
             console.error("You have already initialized " + name);
             return;
         }
 
-        instance = new MixpanelLib();
+        instance = new AloomaLib();
         instance._init(token, config, name);
 
-        instance['people'] = new MixpanelPeople();
+        instance['people'] = new AloomaPeople();
         instance['people']._init(instance);
 
         // if any instance on the page has debug = true, we set the
@@ -2052,54 +2050,54 @@ Globals should be all caps
     };
 
     /**
-     * Mixpanel Library Object
+     * Alooma Library Object
      * @constructor
      */
-    var MixpanelLib = function() { };
+    var AloomaLib = function() { };
 
     // Initialization methods
 
     /**
-     * This function initializes a new instance of the Mixpanel tracking object.
-     * All new instances are added to the main mixpanel object as sub properties (such as
-     * mixpanel.library_name) and also returned by this function. To define a
+     * This function initializes a new instance of the Alooma tracking object.
+     * All new instances are added to the main alooma object as sub properties (such as
+     * alooma.library_name) and also returned by this function. To define a
      * second instance on the page, you would call:
      *
-     *     mixpanel.init("new token", { your: "config" }, "library_name");
+     *     alooma.init("new token", { your: "config" }, "library_name");
      *
      * and use it like so:
      *
-     *     mixpanel.library_name.track(...);
+     *     alooma.library_name.track(...);
      *
-     * @param {String} token   Your Mixpanel API token
+     * @param {String} token   Your Alooma API token
      * @param {Object} [config]  A dictionary of config options to override
-     * @param {String} [name]    The name for the new mixpanel instance that you want created
+     * @param {String} [name]    The name for the new alooma instance that you want created
      */
-    MixpanelLib.prototype.init = function (token, config, name) {
+    AloomaLib.prototype.init = function (token, config, name) {
         if (typeof(name) === "undefined") {
             console.error("You must name your new library: init(token, config, name)");
             return;
         }
         if (name === PRIMARY_INSTANCE_NAME) {
-            console.error("You must initialize the main mixpanel object right after you include the Mixpanel js snippet");
+            console.error("You must initialize the main alooma object right after you include the Alooma js snippet");
             return;
         }
 
         var instance = create_mplib(token, config, name);
-        mixpanel[name] = instance;
+        alooma[name] = instance;
         instance._loaded();
 
         return instance;
     };
 
-    // mixpanel._init(token:string, config:object, name:string)
+    // alooma._init(token:string, config:object, name:string)
     //
-    // This function sets up the current instance of the mixpanel
+    // This function sets up the current instance of the alooma
     // library.  The difference between this method and the init(...)
     // method is this one initializes the actual instance, whereas the
     // init(...) method sets up a new library and calls _init on it.
     //
-    MixpanelLib.prototype._init = function(token, config, name) {
+    AloomaLib.prototype._init = function(token, config, name) {
         this['__loaded'] = true;
         this['config'] = {};
 
@@ -2119,13 +2117,13 @@ Globals should be all caps
             , "identify_called": false
         };
 
-        this['persistence'] = this['cookie'] = new MixpanelPersistence(this['config']);
+        this['persistence'] = this['cookie'] = new AloomaPersistence(this['config']);
         this.register_once({'distinct_id': _.UUID()}, "");
     };
 
     // Private methods
 
-    MixpanelLib.prototype._loaded = function() {
+    AloomaLib.prototype._loaded = function() {
         this.get_config('loaded')(this);
 
         // this happens after so a user can call identify/name_tag in
@@ -2135,7 +2133,7 @@ Globals should be all caps
         }
     };
 
-    MixpanelLib.prototype._dom_loaded = function() {
+    AloomaLib.prototype._dom_loaded = function() {
         _.each(this.__dom_loaded_queue, function(item) {
             this._track_dom.apply(this, item);
         }, this);
@@ -2146,7 +2144,7 @@ Globals should be all caps
         delete this.__request_queue;
     };
 
-    MixpanelLib.prototype._track_dom = function(DomClass, args) {
+    AloomaLib.prototype._track_dom = function(DomClass, args) {
         if (this.get_config('img')) {
             console.error("You can't use DOM tracking functions with img = true.");
             return false;
@@ -2170,7 +2168,7 @@ Globals should be all caps
      * If we are going to use script tags, this returns a string to use as the
      * callback GET param.
      */
-    MixpanelLib.prototype._prepare_callback = function(callback, data) {
+    AloomaLib.prototype._prepare_callback = function(callback, data) {
         if (_.isUndefined(callback)) {
             return null;
         }
@@ -2195,7 +2193,7 @@ Globals should be all caps
         }
     };
 
-    MixpanelLib.prototype._send_request = function(url, data, callback) {
+    AloomaLib.prototype._send_request = function(url, data, callback) {
         if (ENQUEUE_REQUESTS) {
             this.__request_queue.push(arguments);
             return;
@@ -2264,18 +2262,18 @@ Globals should be all caps
     };
 
     /**
-     * _execute_array() deals with processing any mixpanel function
-     * calls that were called before the Mixpanel library were loaded
+     * _execute_array() deals with processing any alooma function
+     * calls that were called before the Alooma library were loaded
      * (and are thus stored in an array so they can be called later)
      *
-     * Note: we fire off all the mixpanel function calls && user defined
-     * functions BEFORE we fire off mixpanel tracking calls. This is so
+     * Note: we fire off all the alooma function calls && user defined
+     * functions BEFORE we fire off alooma tracking calls. This is so
      * identify/register/set_config calls can properly modify early
      * tracking calls.
      *
      * @param {Array} array
      */
-    MixpanelLib.prototype._execute_array = function(array) {
+    AloomaLib.prototype._execute_array = function(array) {
         var fn_name, alias_calls = [], other_calls = [], tracking_calls = [];
         _.each(array, function(item) {
             if (item) {
@@ -2311,26 +2309,26 @@ Globals should be all caps
      * (created in the snippet).
      *
      * ### Usage:
-     *     mixpanel.push(['register', { a: 'b' }]);
+     *     alooma.push(['register', { a: 'b' }]);
      *
      * @param {Array} item A [function_name, args...] array to be executed
      */
-    MixpanelLib.prototype.push = function(item) {
+    AloomaLib.prototype.push = function(item) {
         this._execute_array([item]);
     };
 
     /**
-     * Disable events on the Mixpanel object. If passed no arguments,
+     * Disable events on the Alooma object. If passed no arguments,
      * this function disables tracking of any event. If passed an
      * array of event names, those events will be disabled, but other
      * events will continue to be tracked.
      *
-     * Note: this function does not stop other mixpanel functions from
+     * Note: this function does not stop other alooma functions from
      * firing, such as register() or people.set().
      *
      * @param {Array} [events] An array of event names to disable
      */
-    MixpanelLib.prototype.disable = function(events) {
+    AloomaLib.prototype.disable = function(events) {
         if (typeof(events) === 'undefined') {
             this._flags.disable_all_events = true;
         } else {
@@ -2340,12 +2338,12 @@ Globals should be all caps
 
     /**
      * Track an event. This is the most important and
-     * frequently used Mixpanel function.
+     * frequently used Alooma function.
      *
      * ### Usage:
      *
      *     // track an event named "Registered"
-     *     mixpanel.track("Registered", {"Gender": "Male", "Age": 21});
+     *     alooma.track("Registered", {"Gender": "Male", "Age": 21});
      *
      * To track link clicks or form submissions, see track_links() or track_forms().
      *
@@ -2353,9 +2351,9 @@ Globals should be all caps
      * @param {Object} [properties] A set of properties to include with the event you're sending. These describe the user who did the event or details about the event itself.
      * @param {Function} [callback] If provided, the callback function will be called after tracking the event.
      */
-    MixpanelLib.prototype.track = function(event_name, properties, callback) {
+    AloomaLib.prototype.track = function(event_name, properties, callback) {
         if (typeof(event_name) === "undefined") {
-            console.error("No event name provided to mixpanel.track");
+            console.error("No event name provided to alooma.track");
             return;
         }
 
@@ -2397,7 +2395,7 @@ Globals should be all caps
             , json_data     = _.JSONEncode(truncated_data)
             , encoded_data  = _.base64Encode(json_data);
 
-        console.log("MIXPANEL REQUEST:");
+        console.log("ALOOMA REQUEST:");
         console.log(truncated_data);
 
         this._send_request(
@@ -2417,7 +2415,7 @@ Globals should be all caps
      * @param {String} [page] The url of the page to record. If you don't include this, it defaults to the current url.
      * @api private
      */
-    MixpanelLib.prototype.track_pageview = function(page) {
+    AloomaLib.prototype.track_pageview = function(page) {
         if (typeof(page) === "undefined") { page = document.location.href; }
         this.track("mp_page_view", _.info.pageviewInfo(page));
     };
@@ -2429,11 +2427,11 @@ Globals should be all caps
      * ### Usage:
      *
      *     // track click for link id #nav
-     *     mixpanel.track_links("#nav", "Clicked Nav Link");
+     *     alooma.track_links("#nav", "Clicked Nav Link");
      *
      * ### Notes:
      *
-     * This function will wait up to 300 ms for the Mixpanel
+     * This function will wait up to 300 ms for the Alooma
      * servers to respond. If they have not responded by that time
      * it will head to the link without ensuring that your event
      * has been tracked.  To configure this timeout please see the
@@ -2443,14 +2441,14 @@ Globals should be all caps
      * function will receive the DOMElement that triggered the
      * event as an argument.  You are expected to return an object
      * from the function; any properties defined on this object
-     * will be sent to mixpanel as event properties.
+     * will be sent to alooma as event properties.
      *
      * @type {Function}
      * @param {String} query A valid DOM query
      * @param {String} event_name The name of the event to track
      * @param {Object|Function} [properties] A properties object or function that returns a dictionary of properties when passed a DOMElement
      */
-    MixpanelLib.prototype.track_links = function() {
+    AloomaLib.prototype.track_links = function() {
         return this._track_dom.call(this, LinkTracker, arguments);
     };
 
@@ -2460,11 +2458,11 @@ Globals should be all caps
      * ### Usage:
      *
      *     // track submission for form id "register"
-     *     mixpanel.track_forms("#register", "Created Account");
+     *     alooma.track_forms("#register", "Created Account");
      *
      * ### Notes:
      *
-     * This function will wait up to 300 ms for the mixpanel
+     * This function will wait up to 300 ms for the alooma
      * servers to respond, if they have not responded by that time
      * it will head to the link without ensuring that your event
      * has been tracked.  To configure this timeout please see the
@@ -2474,14 +2472,14 @@ Globals should be all caps
      * function will receive the DOMElement that triggered the
      * event as an argument.  You are expected to return an object
      * from the function; any properties defined on this object
-     * will be sent to mixpanel as event properties.
+     * will be sent to alooma as event properties.
      *
      * @type {Function}
      * @param {String} query  A valid DOM query
      * @param {String} event_name The name of the event to track
      * @param {Object|Function} [properties] This can be a set of properties, or a function that returns a set of properties after being passed a DOMElement
      */
-    MixpanelLib.prototype.track_forms = function() {
+    AloomaLib.prototype.track_forms = function() {
         return this._track_dom.call(this, FormTracker, arguments);
     };
 
@@ -2492,10 +2490,10 @@ Globals should be all caps
      * ### Usage:
      *
      *     // register "Gender" as a super property
-     *     mixpanel.register('Gender', 'Female');
+     *     alooma.register('Gender', 'Female');
      *
      *     // register several super properties when a user signs up
-     *     mixpanel.register({
+     *     alooma.register({
      *         'Email': 'jdoe@example.com',
      *         'Account Type': 'Free'
      *     });
@@ -2503,7 +2501,7 @@ Globals should be all caps
      * @param {Object} properties An associative array of properties to store about the user
      * @param {Number} [days] How many days since the user's last visit to store the super properties
      */
-    MixpanelLib.prototype.register = function(props, days) {
+    AloomaLib.prototype.register = function(props, days) {
         this['persistence'].register(props, days);
     };
 
@@ -2512,9 +2510,9 @@ Globals should be all caps
      * overwrite previous super property values, unlike register().
      *
      * ### Usage:
-     *     
+     *
      *     // register a super property for the first time only
-     *     mixpanel.register_once('First Login Date', new Date());
+     *     alooma.register_once('First Login Date', new Date());
      *
      * ### Notes:
      *
@@ -2525,7 +2523,7 @@ Globals should be all caps
      * @param {*} [default_value] Value to override if already set in super properties (ex: "False") Default: "None"
      * @param {Number} [days] How many days since the users last visit to store the super properties
      */
-    MixpanelLib.prototype.register_once = function(props, default_value, days) {
+    AloomaLib.prototype.register_once = function(props, default_value, days) {
         this['persistence'].register_once(props, default_value, days);
     };
 
@@ -2534,11 +2532,11 @@ Globals should be all caps
      *
      * @param {String} property The name of the super property to remove
      */
-    MixpanelLib.prototype.unregister = function(property) {
+    AloomaLib.prototype.unregister = function(property) {
         this['persistence'].unregister(property);
     };
 
-    MixpanelLib.prototype._register_single = function(prop, value) {
+    AloomaLib.prototype._register_single = function(prop, value) {
         var props = {};
         props[prop] = value;
         this.register(props);
@@ -2554,20 +2552,20 @@ Globals should be all caps
      * ### Notes:
      *
      * You can call this function to overwrite a previously set
-     * unique ID for the current user. Mixpanel cannot translate
+     * unique ID for the current user. Alooma cannot translate
      * between IDs at this time, so when you change a user's ID
      * they will appear to be a new user.
      *
-     * identify() should not be called to link anonymous activity to 
-     * subsequent activity when a unique ID is first assigned. 
-     * Use alias() when a unique ID is first assigned (registration), and  
-     * use identify() to identify the user with that unique ID on an ongoing 
-     * basis (e.g., each time a user logs in after registering). 
+     * identify() should not be called to link anonymous activity to
+     * subsequent activity when a unique ID is first assigned.
+     * Use alias() when a unique ID is first assigned (registration), and
+     * use identify() to identify the user with that unique ID on an ongoing
+     * basis (e.g., each time a user logs in after registering).
      * Do not call identify() at the same time as alias().
      *
      * @param {String} unique_id A string that uniquely identifies a user
      */
-    MixpanelLib.prototype.identify = function(unique_id, _set_callback, _add_callback, _append_callback, _set_once_callback, _union_callback) {
+    AloomaLib.prototype.identify = function(unique_id, _set_callback, _add_callback, _append_callback, _set_once_callback, _union_callback) {
         // Optional Parameters
         //  _set_callback:function  A callback to be run if and when the People set queue is flushed
         //  _add_callback:function  A callback to be run if and when the People add queue is flushed
@@ -2593,44 +2591,44 @@ Globals should be all caps
      *
      * ### Notes:
      *
-     * get_distinct_id() can only be called after the Mixpanel library has finished loading.
+     * get_distinct_id() can only be called after the Alooma library has finished loading.
      * init() has a loaded function available to handle this automatically. For example:
      *
-     *     // set distinct_id after the mixpanel library has loaded
-     *     mixpanel.init("YOUR PROJECT TOKEN", {
+     *     // set distinct_id after the alooma library has loaded
+     *     alooma.init("YOUR PROJECT TOKEN", {
      *         loaded: function() {
-     *             distinct_id = mixpanel.get_distinct_id();
+     *             distinct_id = alooma.get_distinct_id();
      *         }
-     *     }); 
+     *     });
      */
-    MixpanelLib.prototype.get_distinct_id = function() {
+    AloomaLib.prototype.get_distinct_id = function() {
         return this.get_property('distinct_id');
     };
 
     /**
-     * Create an alias, which Mixpanel will use to link two distinct_ids going forward (not retroactively).
+     * Create an alias, which Alooma will use to link two distinct_ids going forward (not retroactively).
      * Multiple aliases can map to the same original ID, but not vice-versa. Aliases can also be chained - the
      * following is a valid scenario:
      *
-     *     mixpanel.alias("new_id", "existing_id");
+     *     alooma.alias("new_id", "existing_id");
      *     ...
-     *     mixpanel.alias("newer_id", "new_id");
+     *     alooma.alias("newer_id", "new_id");
      *
      * If the original ID is not passed in, we will use the current distinct_id - probably the auto-generated GUID.
-     * 
+     *
      * ### Notes:
-     *     
-     * The best practice is to call alias() when a unique ID is first created for a user 
+     *
+     * The best practice is to call alias() when a unique ID is first created for a user
      * (e.g., when a user first registers for an account and provides an email address).
-     * alias() should never be called more than once for a given user, except to 
+     * alias() should never be called more than once for a given user, except to
      * chain a newer ID to a previously new ID, as described above.
      *
      * @param {String} alias A unique identifier that you want to use for this user in the future.
      * @param {String} [original] The current identifier being used for this user.
      */
-    MixpanelLib.prototype.alias = function(alias, original) {
+    AloomaLib.prototype.alias = function(alias, original) {
         // If the $people_distinct_id key exists in persistence, there has been a previous
-        // mixpanel.people.identify() call made for this user. It is VERY BAD to make an alias with
+        // alooma.people.identify() call made for this user. It is VERY BAD to make an alias with
         // this ID, as it will duplicate users.
         if (alias === this.get_property(PEOPLE_DISTINCT_ID_KEY)) {
             console.critical("Attempting to create alias for existing People user - aborting.");
@@ -2656,7 +2654,7 @@ Globals should be all caps
 
     /**
      * Provide a string to recognize the user by. The string passed to
-     * this method will appear in the Mixpanel Streams product rather
+     * this method will appear in the Alooma Streams product rather
      * than an automatically generated name. Name tags do not have to
      * be unique.
      *
@@ -2665,12 +2663,12 @@ Globals should be all caps
      * @param {String} name_tag A human readable name for the user
      * @api private
      */
-    MixpanelLib.prototype.name_tag = function(name_tag) {
+    AloomaLib.prototype.name_tag = function(name_tag) {
         this._register_single('mp_name_tag', name_tag);
     };
 
     /**
-     * Update the configuration of a mixpanel library instance.
+     * Update the configuration of a alooma library instance.
      *
      * The default config is:
      *
@@ -2681,25 +2679,25 @@ Globals should be all caps
      *       // super properties span subdomains
      *       cross_subdomain_cookie:     true
      *
-     *       // if this is true, the mixpanel cookie or localStorage entry
+     *       // if this is true, the alooma cookie or localStorage entry
      *       // will be deleted, and no user persistence will take place
      *       disable_persistence:        false
      *
      *       // type of persistent store for super properties (cookie/
      *       // localStorage) if set to "localStorage", any existing
-     *       // mixpanel cookie value with the same persistence_name
+     *       // alooma cookie value with the same persistence_name
      *       // will be transferred to localStorage and deleted
      *       persistence:                "cookie"
      *
      *       // name for super properties persistent store
      *       persistence_name:           ""
      *
-     *       // if this is true, mixpanel cookies will be marked as
+     *       // if this is true, alooma cookies will be marked as
      *       // secure, meaning they will only be transmitted over https
      *       secure_cookie:              false
      *
      *       // the amount of time track_links will
-     *       // wait for Mixpanel's servers to respond
+     *       // wait for Alooma's servers to respond
      *       track_links_timeout:        300
      *
      *       // should we track a page view on page load
@@ -2716,7 +2714,7 @@ Globals should be all caps
      *
      * @param {Object} config A dictionary of new configuration values to update
      */
-    MixpanelLib.prototype.set_config = function(config) {
+    AloomaLib.prototype.set_config = function(config) {
         if (_.isObject(config)) {
             _.extend(this['config'], config);
 
@@ -2737,7 +2735,7 @@ Globals should be all caps
     /**
      * returns the current config object for the library.
      */
-    MixpanelLib.prototype.get_config = function(prop_name) {
+    AloomaLib.prototype.get_config = function(prop_name) {
         return this['config'][prop_name];
     };
 
@@ -2747,23 +2745,23 @@ Globals should be all caps
      *
      * ### Notes:
      *
-     * get_property() can only be called after the Mixpanel library has finished loading.
+     * get_property() can only be called after the Alooma library has finished loading.
      * init() has a loaded function available to handle this automatically. For example:
      *
-     *     // grab value for "user_id" after the mixpanel library has loaded
-     *     mixpanel.init("YOUR PROJECT TOKEN", {
+     *     // grab value for "user_id" after the alooma library has loaded
+     *     alooma.init("YOUR PROJECT TOKEN", {
      *         loaded: function() {
-     *             user_id = mixpanel.get_property("user_id");
+     *             user_id = alooma.get_property("user_id");
      *         }
      *     });
      *
      * @param {String} property_name The name of the super property you want to retrieve
      */
-    MixpanelLib.prototype.get_property = function(property_name) {
+    AloomaLib.prototype.get_property = function(property_name) {
         return this['persistence']['props'][property_name];
     };
 
-    MixpanelLib.prototype.toString = function() {
+    AloomaLib.prototype.toString = function() {
         var name = this.get_config("name");
         if (name !== PRIMARY_INSTANCE_NAME) {
             name = PRIMARY_INSTANCE_NAME + "." + name;
@@ -2771,12 +2769,12 @@ Globals should be all caps
         return name;
     };
 
-    MixpanelLib.prototype._check_and_handle_notifications = function(distinct_id) {
+    AloomaLib.prototype._check_and_handle_notifications = function(distinct_id) {
         if (!distinct_id || this._flags.identify_called || this.get_config('disable_notifications')) {
             return;
         }
 
-        console.log("MIXPANEL NOTIFICATION CHECK");
+        console.log("ALOOMA NOTIFICATION CHECK");
 
         var data = {
             'verbose':     true,
@@ -2797,19 +2795,19 @@ Globals should be all caps
         );
     };
 
-    MixpanelLib.prototype._show_notification = function(notification_data) {
+    AloomaLib.prototype._show_notification = function(notification_data) {
         var notification = new MPNotif(notification_data, this);
         notification.show();
     };
 
     /**
-     * Mixpanel People Object
+     * Alooma People Object
      * @constructor
      */
-    var MixpanelPeople = function(){ };
+    var AloomaPeople = function(){ };
 
-    MixpanelPeople.prototype._init = function(mixpanel) {
-        this._mixpanel = mixpanel;
+    AloomaPeople.prototype._init = function(alooma) {
+        this._alooma = alooma;
     };
 
     /*
@@ -2817,10 +2815,10 @@ Globals should be all caps
      *
      * ### Usage:
      *
-     *     mixpanel.people.set('gender', 'm');
+     *     alooma.people.set('gender', 'm');
      *
      *     // or set multiple properties at once
-     *     mixpanel.people.set({
+     *     alooma.people.set({
      *         'Company': 'Acme',
      *         'Plan': 'Premium',
      *         'Upgrade date': new Date()
@@ -2831,7 +2829,7 @@ Globals should be all caps
      * @param {*} [to] A value to set on the given property name
      * @param {Function} [callback] If provided, the callback will be called after the tracking event
      */
-    MixpanelPeople.prototype.set = function(prop, to, callback) {
+    AloomaPeople.prototype.set = function(prop, to, callback) {
         var data = {};
         var $set = {};
         if (_.isObject(prop)) {
@@ -2847,13 +2845,13 @@ Globals should be all caps
 
         // make sure that the referrer info has been updated and saved
         if (this._get_config('save_referrer')) {
-            this._mixpanel['persistence'].update_referrer_info(document.referrer);
+            this._alooma['persistence'].update_referrer_info(document.referrer);
         }
 
         // update $set object with default people properties
         $set = _.extend({}
             , _.info.people_properties()
-            , this._mixpanel['persistence'].get_referrer_info()
+            , this._alooma['persistence'].get_referrer_info()
             , $set
         );
 
@@ -2869,10 +2867,10 @@ Globals should be all caps
      *
      * ### Usage:
      *
-     *     mixpanel.people.set_once('First Login Date', new Date());
+     *     alooma.people.set_once('First Login Date', new Date());
      *
      *     // or set multiple properties at once
-     *     mixpanel.people.set_once({
+     *     alooma.people.set_once({
      *         'First Login Date': new Date(),
      *         'Starting Plan': 'Premium'
      *     });
@@ -2883,7 +2881,7 @@ Globals should be all caps
      * @param {*} [to] A value to set on the given property name
      * @param {Function} [callback] If provided, the callback will be called after the tracking event
      */
-    MixpanelPeople.prototype.set_once = function(prop, to, callback) {
+    AloomaPeople.prototype.set_once = function(prop, to, callback) {
         var data = {};
         var $set_once = {};
         if (_.isObject(prop)) {
@@ -2905,18 +2903,18 @@ Globals should be all caps
      *
      * ### Usage:
      *
-     *     mixpanel.people.increment('page_views', 1);
+     *     alooma.people.increment('page_views', 1);
      *
      *     // or, for convenience, if you're just incrementing a counter by
      *     // 1, you can simply do
-     *     mixpanel.people.increment('page_views');
+     *     alooma.people.increment('page_views');
      *
      *     // to decrement a counter, pass a negative number
-     *     mixpanel.people.increment('credits_left': -1);
+     *     alooma.people.increment('credits_left': -1);
      *
-     *     // like mixpanel.people.set(), you can increment multiple
+     *     // like alooma.people.set(), you can increment multiple
      *     // properties at once:
-     *     mixpanel.people.increment({
+     *     alooma.people.increment({
      *         counter1: 1,
      *         counter2: 6
      *     });
@@ -2925,14 +2923,14 @@ Globals should be all caps
      * @param {Number} [by] An amount to increment the given property
      * @param {Function} [callback] If provided, the callback will be called after the tracking event
      */
-    MixpanelPeople.prototype.increment = function(prop, by, callback) {
+    AloomaPeople.prototype.increment = function(prop, by, callback) {
         var data = {};
         var $add = {};
         if (_.isObject(prop)) {
             _.each(prop, function(v, k) {
                 if (!this._is_reserved_property(k)) {
                     if (isNaN(parseFloat(v))) {
-                        console.error("Invalid increment value passed to mixpanel.people.increment - must be a number");
+                        console.error("Invalid increment value passed to alooma.people.increment - must be a number");
                         return;
                     } else {
                         $add[k] = v;
@@ -2941,7 +2939,7 @@ Globals should be all caps
             }, this);
             callback = by;
         } else {
-            // convenience: mixpanel.people.increment('property'); will
+            // convenience: alooma.people.increment('property'); will
             // increment 'property' by 1
             if (_.isUndefined(by)) {
                 by = 1;
@@ -2959,11 +2957,11 @@ Globals should be all caps
      * ### Usage:
      *
      *     // append a value to a list, creating it if needed
-     *     mixpanel.people.append('pages_visited', 'homepage');
+     *     alooma.people.append('pages_visited', 'homepage');
      *
-     *     // like mixpanel.people.set(), you can append multiple
+     *     // like alooma.people.set(), you can append multiple
      *     // properties at once:
-     *     mixpanel.people.append({
+     *     alooma.people.append({
      *         list1: 'bob',
      *         list2: 123
      *     });
@@ -2972,7 +2970,7 @@ Globals should be all caps
      * @param {*} [value] An item to append to the list
      * @param {Function} [callback] If provided, the callback will be called after the tracking event
      */
-    MixpanelPeople.prototype.append = function(list_name, value, callback) {
+    AloomaPeople.prototype.append = function(list_name, value, callback) {
         var data = {};
         var $append = {};
         if (_.isObject(list_name)) {
@@ -2997,18 +2995,18 @@ Globals should be all caps
      * ### Usage:
      *
      *     // merge a value to a list, creating it if needed
-     *     mixpanel.people.union('pages_visited', 'homepage');
+     *     alooma.people.union('pages_visited', 'homepage');
      *
-     *     // like mixpanel.people.set(), you can append multiple
+     *     // like alooma.people.set(), you can append multiple
      *     // properties at once:
-     *     mixpanel.people.union({
+     *     alooma.people.union({
      *         list1: 'bob',
      *         list2: 123
      *     });
      *
-     *     // like mixpanel.people.append(), you can append multiple
+     *     // like alooma.people.append(), you can append multiple
      *     // values to the same list:
-     *     mixpanel.people.union({
+     *     alooma.people.union({
      *         list1: ['bob', 'billy']
      *     });
      *
@@ -3016,7 +3014,7 @@ Globals should be all caps
      * @param {*} [value] Value / values to merge with the given property
      * @param {Function} [callback] If provided, the callback will be called after the tracking event
      */
-    MixpanelPeople.prototype.union = function(list_name, values, callback) {
+    AloomaPeople.prototype.union = function(list_name, values, callback) {
         var data = {};
         var $union = {};
         if (_.isObject(list_name)) {
@@ -3037,15 +3035,15 @@ Globals should be all caps
     /*
      * Record that you have charged the current user a certain amount
      * of money. Charges recorded with track_charge() will appear in the
-     * Mixpanel revenue report.
+     * Alooma revenue report.
      *
      * ### Usage:
      *
      *     // charge a user $50
-     *     mixpanel.people.track_charge(50);
+     *     alooma.people.track_charge(50);
      *
      *     // charge a user $30.50 on the 2nd of january
-     *     mixpanel.people.track_charge(30.50, {
+     *     alooma.people.track_charge(30.50, {
      *         '$time': new Date('jan 1 2012')
      *     });
      *
@@ -3053,11 +3051,11 @@ Globals should be all caps
      * @param {Object} [properties] An associative array of properties associated with the charge
      * @param {Function} [callback] If provided, the callback will be called when the server responds
      */
-    MixpanelPeople.prototype.track_charge = function(amount, properties, callback) {
+    AloomaPeople.prototype.track_charge = function(amount, properties, callback) {
         if (!_.isNumber(amount)) {
             amount = parseFloat(amount);
             if (isNaN(amount)) {
-                console.error("Invalid value passed to mixpanel.people.track_charge - must be a number");
+                console.error("Invalid value passed to alooma.people.track_charge - must be a number");
                 return;
             }
         }
@@ -3073,40 +3071,40 @@ Globals should be all caps
      *
      * ### Usage:
      *
-     *     mixpanel.people.clear_charges();
+     *     alooma.people.clear_charges();
      *
      * @param {Function} [callback] If provided, the callback will be called after the tracking event
      */
-    MixpanelPeople.prototype.clear_charges = function(callback) {
+    AloomaPeople.prototype.clear_charges = function(callback) {
         return this.set('$transactions', [], callback);
     };
 
     /*
      * Permanently deletes the current people analytics profile from
-     * Mixpanel (using the current distinct_id).
+     * Alooma (using the current distinct_id).
      *
      * ### Usage:
      *
      *     // remove the all data you have stored about the current user
-     *     mixpanel.people.delete_user();
+     *     alooma.people.delete_user();
      *
      */
-    MixpanelPeople.prototype.delete_user = function() {
+    AloomaPeople.prototype.delete_user = function() {
         if (!this._identify_called()) {
-            console.error('mixpanel.people.delete_user() requires you to call identify() first');
+            console.error('alooma.people.delete_user() requires you to call identify() first');
             return;
         }
-        var data = {'$delete': this._mixpanel.get_distinct_id()};
+        var data = {'$delete': this._alooma.get_distinct_id()};
         return this._send_request(data);
     };
 
-    MixpanelPeople.prototype.toString = function() {
-        return this._mixpanel.toString() + ".people";
+    AloomaPeople.prototype.toString = function() {
+        return this._alooma.toString() + ".people";
     };
 
-    MixpanelPeople.prototype._send_request = function(data, callback) {
+    AloomaPeople.prototype._send_request = function(data, callback) {
         data['$token'] = this._get_config('token');
-        data['$distinct_id'] = this._mixpanel.get_distinct_id();
+        data['$distinct_id'] = this._alooma.get_distinct_id();
 
         var date_encoded_data = _.encodeDates(data)
           , truncated_data    = _.truncate(date_encoded_data, 255)
@@ -3125,38 +3123,38 @@ Globals should be all caps
             return truncated_data;
         }
 
-        console.log("MIXPANEL PEOPLE REQUEST:");
+        console.log("ALOOMA PEOPLE REQUEST:");
         console.log(truncated_data);
 
-        this._mixpanel._send_request(
+        this._alooma._send_request(
             this._get_config('api_host') + '/engage/',
             { 'data': encoded_data },
-            this._mixpanel._prepare_callback(callback, truncated_data)
+            this._alooma._prepare_callback(callback, truncated_data)
         );
 
         return truncated_data;
     };
 
-    MixpanelPeople.prototype._get_config = function(conf_var) {
-        return this._mixpanel.get_config(conf_var);
+    AloomaPeople.prototype._get_config = function(conf_var) {
+        return this._alooma.get_config(conf_var);
     };
 
-    MixpanelPeople.prototype._identify_called = function() {
-        return this._mixpanel._flags.identify_called === true;
+    AloomaPeople.prototype._identify_called = function() {
+        return this._alooma._flags.identify_called === true;
     };
 
     // Queue up engage operations if identify hasn't been called yet.
-    MixpanelPeople.prototype._enqueue = function(data) {
+    AloomaPeople.prototype._enqueue = function(data) {
         if (SET_ACTION in data) {
-            this._mixpanel['persistence']._add_to_people_queue(SET_ACTION, data);
+            this._alooma['persistence']._add_to_people_queue(SET_ACTION, data);
         } else if (SET_ONCE_ACTION in data) {
-            this._mixpanel['persistence']._add_to_people_queue(SET_ONCE_ACTION, data);
+            this._alooma['persistence']._add_to_people_queue(SET_ONCE_ACTION, data);
         } else if (ADD_ACTION in data) {
-            this._mixpanel['persistence']._add_to_people_queue(ADD_ACTION, data);
+            this._alooma['persistence']._add_to_people_queue(ADD_ACTION, data);
         } else if (APPEND_ACTION in data) {
-            this._mixpanel['persistence']._add_to_people_queue(APPEND_ACTION, data);
+            this._alooma['persistence']._add_to_people_queue(APPEND_ACTION, data);
         } else if (UNION_ACTION in data) {
-            this._mixpanel['persistence']._add_to_people_queue(UNION_ACTION, data);
+            this._alooma['persistence']._add_to_people_queue(UNION_ACTION, data);
         } else {
             console.error("Invalid call to _enqueue():", data);
         }
@@ -3164,20 +3162,20 @@ Globals should be all caps
 
     // Flush queued engage operations - order does not matter,
     // and there are network level race conditions anyway
-    MixpanelPeople.prototype._flush = function(_set_callback, _add_callback, _append_callback, _set_once_callback, _union_callback) {
+    AloomaPeople.prototype._flush = function(_set_callback, _add_callback, _append_callback, _set_once_callback, _union_callback) {
         var _this = this,
-            $set_queue = _.extend({}, this._mixpanel['persistence']._get_queue(SET_ACTION)),
-            $set_once_queue = _.extend({}, this._mixpanel['persistence']._get_queue(SET_ONCE_ACTION)),
-            $add_queue = _.extend({}, this._mixpanel['persistence']._get_queue(ADD_ACTION)),
-            $append_queue = this._mixpanel['persistence']._get_queue(APPEND_ACTION),
-            $union_queue = _.extend({}, this._mixpanel['persistence']._get_queue(UNION_ACTION));
+            $set_queue = _.extend({}, this._alooma['persistence']._get_queue(SET_ACTION)),
+            $set_once_queue = _.extend({}, this._alooma['persistence']._get_queue(SET_ONCE_ACTION)),
+            $add_queue = _.extend({}, this._alooma['persistence']._get_queue(ADD_ACTION)),
+            $append_queue = this._alooma['persistence']._get_queue(APPEND_ACTION),
+            $union_queue = _.extend({}, this._alooma['persistence']._get_queue(UNION_ACTION));
 
         if (!_.isUndefined($set_queue) && _.isObject($set_queue) && !_.isEmptyObject($set_queue)) {
-            _this._mixpanel['persistence']._pop_from_people_queue(SET_ACTION, $set_queue);
+            _this._alooma['persistence']._pop_from_people_queue(SET_ACTION, $set_queue);
             this.set($set_queue, function(response, data) {
                 // on bad response, we want to add it back to the queue
                 if (response == 0) {
-                    _this._mixpanel['persistence']._add_to_people_queue(SET_ACTION, $set_queue);
+                    _this._alooma['persistence']._add_to_people_queue(SET_ACTION, $set_queue);
                 }
                 if (!_.isUndefined(_set_callback)) {
                     _set_callback(response, data);
@@ -3186,11 +3184,11 @@ Globals should be all caps
         }
 
         if (!_.isUndefined($set_once_queue) && _.isObject($set_once_queue) && !_.isEmptyObject($set_once_queue)) {
-            _this._mixpanel['persistence']._pop_from_people_queue(SET_ONCE_ACTION, $set_once_queue);
+            _this._alooma['persistence']._pop_from_people_queue(SET_ONCE_ACTION, $set_once_queue);
             this.set_once($set_once_queue, function(response, data) {
                 // on bad response, we want to add it back to the queue
                 if (response == 0) {
-                    _this._mixpanel['persistence']._add_to_people_queue(SET_ONCE_ACTION, $set_once_queue);
+                    _this._alooma['persistence']._add_to_people_queue(SET_ONCE_ACTION, $set_once_queue);
                 }
                 if (!_.isUndefined(_set_once_callback)) {
                     _set_once_callback(response, data);
@@ -3199,11 +3197,11 @@ Globals should be all caps
         }
 
         if (!_.isUndefined($add_queue) && _.isObject($add_queue) && !_.isEmptyObject($add_queue)) {
-            _this._mixpanel['persistence']._pop_from_people_queue(ADD_ACTION, $add_queue);
+            _this._alooma['persistence']._pop_from_people_queue(ADD_ACTION, $add_queue);
             this.increment($add_queue, function(response, data) {
                 // on bad response, we want to add it back to the queue
                 if (response == 0) {
-                    _this._mixpanel['persistence']._add_to_people_queue(ADD_ACTION, $add_queue);
+                    _this._alooma['persistence']._add_to_people_queue(ADD_ACTION, $add_queue);
                 }
                 if (!_.isUndefined(_add_callback)) {
                     _add_callback(response, data);
@@ -3212,11 +3210,11 @@ Globals should be all caps
         }
 
         if (!_.isUndefined($union_queue) && _.isObject($union_queue) && !_.isEmptyObject($union_queue)) {
-            _this._mixpanel['persistence']._pop_from_people_queue(UNION_ACTION, $union_queue);
+            _this._alooma['persistence']._pop_from_people_queue(UNION_ACTION, $union_queue);
             this.union($union_queue, function(response, data) {
                 // on bad response, we want to add it back to the queue
                 if (response == 0) {
-                    _this._mixpanel['persistence']._add_to_people_queue(UNION_ACTION, $union_queue);
+                    _this._alooma['persistence']._add_to_people_queue(UNION_ACTION, $union_queue);
                 }
                 if (!_.isUndefined(_union_callback)) {
                     _union_callback(response, data);
@@ -3231,27 +3229,27 @@ Globals should be all caps
                 var $append_item = $append_queue.pop();
                 _this.append($append_item, function(response, data) {
                     if (response == 0) {
-                        _this._mixpanel['persistence']._add_to_people_queue(APPEND_ACTION, $append_item);
+                        _this._alooma['persistence']._add_to_people_queue(APPEND_ACTION, $append_item);
                     }
                     if (!_.isUndefined(_append_callback)) { _append_callback(response, data); }
                 });
             };
             // Save the shortened append queue
-            _this._mixpanel['persistence'].save();
+            _this._alooma['persistence'].save();
         }
     };
 
-    MixpanelPeople.prototype._is_reserved_property = function(prop) {
+    AloomaPeople.prototype._is_reserved_property = function(prop) {
         return prop === '$distinct_id' || prop === '$token';
     };
 
 
     // Internal class for notification display
-    MixpanelLib._Notification = function(notif_data, mixpanel_instance) {
+    AloomaLib._Notification = function(notif_data, alooma_instance) {
         _.bind_instance_methods(this);
 
-        this.mixpanel    = mixpanel_instance;
-        this.persistence = this.mixpanel['persistence'];
+        this.alooma    = alooma_instance;
+        this.persistence = this.alooma['persistence'];
 
         this.campaign_id = _.escapeHTML(notif_data['id']);
         this.message_id  = _.escapeHTML(notif_data['message_id']);
@@ -3285,10 +3283,10 @@ Globals should be all caps
         this._init_video();
     };
 
-    var MPNotif = MixpanelLib._Notification;
+    var MPNotif = AloomaLib._Notification;
 
         MPNotif.ANIM_TIME         = 200;
-        MPNotif.MARKUP_PREFIX     = 'mixpanel-notification';
+        MPNotif.MARKUP_PREFIX     = 'alooma-notification';
         MPNotif.BG_OPACITY        = 0.6;
         MPNotif.NOTIF_TOP         = 25;
         MPNotif.NOTIF_START_TOP   = 200;
@@ -3580,7 +3578,7 @@ Globals should be all caps
                                 '<div id="title">' + this.title + '</div>' +
                                 '<div id="body">' + this.body + '</div>' +
                                 '<div id="tagline">' +
-                                    '<a href="http://mixpanel.com?from=inapp" target="_blank">POWERED BY MIXPANEL</a>' +
+                                    '<a href="http://alooma.com?from=inapp" target="_blank">POWERED BY ALOOMA</a>' +
                                 '</div>' +
                             '</div>' +
                             '<div id="button">' +
@@ -4289,8 +4287,8 @@ Globals should be all caps
                 // track delivery
                 this._track_event('$campaign_delivery', extra_props);
 
-                // mark notification shown (mixpanel property)
-                this.mixpanel['people']['append']({
+                // mark notification shown (alooma property)
+                this.alooma['people']['append']({
                     '$campaigns': this.campaign_id,
                     '$notifications': {
                         'campaign_id': this.campaign_id,
@@ -4482,7 +4480,7 @@ Globals should be all caps
                     'message_type':    'web_inapp',
                     'message_subtype': this.notif_type
                 });
-                this.mixpanel['track'](event_name, properties, cb);
+                this.alooma['track'](event_name, properties, cb);
             } else {
                 cb && cb.call();
             }
@@ -4543,67 +4541,67 @@ Globals should be all caps
     _['info']['device']  = _.info.device;
     _['info']['browser'] = _.info.browser;
 
-    // MixpanelLib Exports
-    MixpanelLib.prototype['init']                            = MixpanelLib.prototype.init;
-    MixpanelLib.prototype['disable']                         = MixpanelLib.prototype.disable;
-    MixpanelLib.prototype['track']                           = MixpanelLib.prototype.track;
-    MixpanelLib.prototype['track_links']                     = MixpanelLib.prototype.track_links;
-    MixpanelLib.prototype['track_forms']                     = MixpanelLib.prototype.track_forms;
-    MixpanelLib.prototype['track_pageview']                  = MixpanelLib.prototype.track_pageview;
-    MixpanelLib.prototype['register']                        = MixpanelLib.prototype.register;
-    MixpanelLib.prototype['register_once']                   = MixpanelLib.prototype.register_once;
-    MixpanelLib.prototype['unregister']                      = MixpanelLib.prototype.unregister;
-    MixpanelLib.prototype['identify']                        = MixpanelLib.prototype.identify;
-    MixpanelLib.prototype['alias']                           = MixpanelLib.prototype.alias;
-    MixpanelLib.prototype['name_tag']                        = MixpanelLib.prototype.name_tag;
-    MixpanelLib.prototype['set_config']                      = MixpanelLib.prototype.set_config;
-    MixpanelLib.prototype['get_config']                      = MixpanelLib.prototype.get_config;
-    MixpanelLib.prototype['get_property']                    = MixpanelLib.prototype.get_property;
-    MixpanelLib.prototype['get_distinct_id']                 = MixpanelLib.prototype.get_distinct_id;
-    MixpanelLib.prototype['toString']                        = MixpanelLib.prototype.toString;
-    MixpanelLib.prototype['_check_and_handle_notifications'] = MixpanelLib.prototype._check_and_handle_notifications;
-    MixpanelLib.prototype['_show_notification']              = MixpanelLib.prototype._show_notification;
+    // AloomaLib Exports
+    AloomaLib.prototype['init']                            = AloomaLib.prototype.init;
+    AloomaLib.prototype['disable']                         = AloomaLib.prototype.disable;
+    AloomaLib.prototype['track']                           = AloomaLib.prototype.track;
+    AloomaLib.prototype['track_links']                     = AloomaLib.prototype.track_links;
+    AloomaLib.prototype['track_forms']                     = AloomaLib.prototype.track_forms;
+    AloomaLib.prototype['track_pageview']                  = AloomaLib.prototype.track_pageview;
+    AloomaLib.prototype['register']                        = AloomaLib.prototype.register;
+    AloomaLib.prototype['register_once']                   = AloomaLib.prototype.register_once;
+    AloomaLib.prototype['unregister']                      = AloomaLib.prototype.unregister;
+    AloomaLib.prototype['identify']                        = AloomaLib.prototype.identify;
+    AloomaLib.prototype['alias']                           = AloomaLib.prototype.alias;
+    AloomaLib.prototype['name_tag']                        = AloomaLib.prototype.name_tag;
+    AloomaLib.prototype['set_config']                      = AloomaLib.prototype.set_config;
+    AloomaLib.prototype['get_config']                      = AloomaLib.prototype.get_config;
+    AloomaLib.prototype['get_property']                    = AloomaLib.prototype.get_property;
+    AloomaLib.prototype['get_distinct_id']                 = AloomaLib.prototype.get_distinct_id;
+    AloomaLib.prototype['toString']                        = AloomaLib.prototype.toString;
+    AloomaLib.prototype['_check_and_handle_notifications'] = AloomaLib.prototype._check_and_handle_notifications;
+    AloomaLib.prototype['_show_notification']              = AloomaLib.prototype._show_notification;
 
-    // MixpanelPersistence Exports
-    MixpanelPersistence.prototype['properties']            = MixpanelPersistence.prototype.properties;
-    MixpanelPersistence.prototype['update_search_keyword'] = MixpanelPersistence.prototype.update_search_keyword;
-    MixpanelPersistence.prototype['update_referrer_info']  = MixpanelPersistence.prototype.update_referrer_info;
-    MixpanelPersistence.prototype['get_cross_subdomain']   = MixpanelPersistence.prototype.get_cross_subdomain;
-    MixpanelPersistence.prototype['clear']                 = MixpanelPersistence.prototype.clear;
+    // AloomaPersistence Exports
+    AloomaPersistence.prototype['properties']            = AloomaPersistence.prototype.properties;
+    AloomaPersistence.prototype['update_search_keyword'] = AloomaPersistence.prototype.update_search_keyword;
+    AloomaPersistence.prototype['update_referrer_info']  = AloomaPersistence.prototype.update_referrer_info;
+    AloomaPersistence.prototype['get_cross_subdomain']   = AloomaPersistence.prototype.get_cross_subdomain;
+    AloomaPersistence.prototype['clear']                 = AloomaPersistence.prototype.clear;
 
-    // MixpanelPeople Exports
-    MixpanelPeople.prototype['set']           = MixpanelPeople.prototype.set;
-    MixpanelPeople.prototype['set_once']      = MixpanelPeople.prototype.set_once;
-    MixpanelPeople.prototype['increment']     = MixpanelPeople.prototype.increment;
-    MixpanelPeople.prototype['append']        = MixpanelPeople.prototype.append;
-    MixpanelPeople.prototype['union']         = MixpanelPeople.prototype.union;
-    MixpanelPeople.prototype['track_charge']  = MixpanelPeople.prototype.track_charge;
-    MixpanelPeople.prototype['clear_charges'] = MixpanelPeople.prototype.clear_charges;
-    MixpanelPeople.prototype['delete_user']   = MixpanelPeople.prototype.delete_user;
-    MixpanelPeople.prototype['toString']      = MixpanelPeople.prototype.toString;
+    // AloomaPeople Exports
+    AloomaPeople.prototype['set']           = AloomaPeople.prototype.set;
+    AloomaPeople.prototype['set_once']      = AloomaPeople.prototype.set_once;
+    AloomaPeople.prototype['increment']     = AloomaPeople.prototype.increment;
+    AloomaPeople.prototype['append']        = AloomaPeople.prototype.append;
+    AloomaPeople.prototype['union']         = AloomaPeople.prototype.union;
+    AloomaPeople.prototype['track_charge']  = AloomaPeople.prototype.track_charge;
+    AloomaPeople.prototype['clear_charges'] = AloomaPeople.prototype.clear_charges;
+    AloomaPeople.prototype['delete_user']   = AloomaPeople.prototype.delete_user;
+    AloomaPeople.prototype['toString']      = AloomaPeople.prototype.toString;
 
-    _.safewrap_class(MixpanelLib, ['identify', '_check_and_handle_notifications', '_show_notification']);
+    _.safewrap_class(AloomaLib, ['identify', '_check_and_handle_notifications', '_show_notification']);
 
     // Initialization
-    if (_.isUndefined(mixpanel)) {
-        // mixpanel wasn't initialized properly, report error and quit
-        console.critical("'mixpanel' object not initialized. Ensure you are using the latest version of the Mixpanel JS Library along with the snippet we provide.");
+    if (_.isUndefined(alooma)) {
+        // alooma wasn't initialized properly, report error and quit
+        console.critical("'alooma' object not initialized. Ensure you are using the latest version of the Alooma JS Library along with the snippet we provide.");
         return;
     }
-    if (mixpanel['__loaded'] || (mixpanel['config'] && mixpanel['persistence'])) {
+    if (alooma['__loaded'] || (alooma['config'] && alooma['persistence'])) {
         // lib has already been loaded at least once; we don't want to override the global object this time so bomb early
-        console.error("Mixpanel library has already been downloaded at least once.");
+        console.error("Alooma library has already been downloaded at least once.");
         return;
     }
     if (SNIPPET_VERSION < 1.1) {
-        // mixpanel wasn't initialized properly, report error and quit
-        console.critical("Version mismatch; please ensure you're using the latest version of the Mixpanel code snippet.");
+        // alooma wasn't initialized properly, report error and quit
+        console.critical("Version mismatch; please ensure you're using the latest version of the Alooma code snippet.");
         return;
     }
 
-    // Load instances of the Mixpanel Library
+    // Load instances of the Alooma Library
     var instances = {};
-    _.each(mixpanel['_i'], function(item) {
+    _.each(alooma['_i'], function(item) {
         var name, instance;
         if (item && _.isArray(item)) {
             name = item[item.length-1];
@@ -4614,44 +4612,44 @@ Globals should be all caps
     });
 
     var extend_mp = function() {
-        // add all the sub mixpanel instances
+        // add all the sub alooma instances
         _.each(instances, function(instance, name) {
-            if (name !== PRIMARY_INSTANCE_NAME) { mixpanel[name] = instance; }
+            if (name !== PRIMARY_INSTANCE_NAME) { alooma[name] = instance; }
         });
 
         // add private functions as _
-        mixpanel['_'] = _;
+        alooma['_'] = _;
     };
 
     // we override the snippets init function to handle the case where a
-    // user initializes the mixpanel library after the script loads & runs
-    mixpanel['init'] = function(token, config, name) {
+    // user initializes the alooma library after the script loads & runs
+    alooma['init'] = function(token, config, name) {
         if (name) {
             // initialize a sub library
-            if (!mixpanel[name]) {
-                mixpanel[name] = instances[name] = create_mplib(token, config, name);
-                mixpanel[name]._loaded();
+            if (!alooma[name]) {
+                alooma[name] = instances[name] = create_mplib(token, config, name);
+                alooma[name]._loaded();
             }
         } else {
-            var instance = mixpanel;
+            var instance = alooma;
 
             if (instances[PRIMARY_INSTANCE_NAME]) {
-                // main mixpanel lib already initialized
+                // main alooma lib already initialized
                 instance = instances[PRIMARY_INSTANCE_NAME];
             } else if (token) {
-                // intialize the main mixpanel lib
+                // intialize the main alooma lib
                 instance = create_mplib(token, config, PRIMARY_INSTANCE_NAME);
                 instance._loaded();
             }
 
-            window[PRIMARY_INSTANCE_NAME] = mixpanel = instance;
+            window[PRIMARY_INSTANCE_NAME] = alooma = instance;
             extend_mp();
         }
     };
 
-    mixpanel['init']();
+    alooma['init']();
 
-    // Fire loaded events after updating the window's mixpanel object
+    // Fire loaded events after updating the window's alooma object
     _.each(instances, function(instance) {
         instance._loaded();
     });
@@ -4710,4 +4708,4 @@ Globals should be all caps
     // fallback handler, always will work
     _.register_event(window, 'load', dom_loaded_handler, true);
 
-})(window['mixpanel']);
+})(window['alooma']);

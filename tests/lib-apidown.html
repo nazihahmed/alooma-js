@@ -24,15 +24,15 @@
             asyncTest('onload functions fire within 5 seconds when api "down"', 2, function() {
                 setTimeout(function() {
                    ok(window.onload_ran, 'window.onload ran');
-                   ok(window.lib_onload_ran, 'mixpanel lib onload ran');
+                   ok(window.lib_onload_ran, 'alooma lib onload ran');
                    start();
                 }, 5000);
             });
         </script>
-        <script>window.MIXPANEL_CUSTOM_LIB_URL = '../mixpanel.js';</script>
-        <script type="text/javascript" src="../mixpanel-jslib-snippet.js"></script>
+        <script>window.ALOOMA_CUSTOM_LIB_URL = '../alooma.js';</script>
+        <script type="text/javascript" src="../alooma-jslib-snippet.js"></script>
         <script type="text/javascript">
-            mixpanel.init("4874fb5a6ac20d3c883349defcfb9c99",
+            alooma.init("4874fb5a6ac20d3c883349defcfb9c99",
             {
                 cookie_name: "test",
                 reset_cookie: true,
@@ -43,10 +43,10 @@
                 track_pageview: true,
                 img: false,
 
-                loaded: function(mixpanel) { window.lib_onload_ran = true; }
+                loaded: function(alooma) { window.lib_onload_ran = true; }
             });
             QUnit.done = function(details) {
-                mixpanel.cookie.clear();
+                alooma.cookie.clear();
             };
         </script>
     </body>

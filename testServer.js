@@ -23,5 +23,5 @@ app.get('/', function(req, res) {
 });
 
 var server = app.listen(3000, function () {
-  console.log('Mixpanel test app listening on port %s', server.address().port);
+  console.log('Alooma test app listening on port %s', server.address().port);
 });

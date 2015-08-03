@@ -18,24 +18,24 @@
         <div id="qunit-fixture"></div>
         <script type="text/javascript">
             var value = Math.random();
-            var mixpanel = [['register', { 'test_value': value }]];
-            mixpanel.people = [function() { this.val_to_change = 42; }];
+            var alooma = [['register', { 'test_value': value }]];
+            a.people = [function() { this.val_to_change = 42; }];
         </script>
-        <script>window.MIXPANEL_CUSTOM_LIB_URL = '../mixpanel.js';</script>
-        <script type="text/javascript" src="../mixpanel-jslib-snippet.js"></script>
+        <script>window.ALOOMA_CUSTOM_LIB_URL = '../alooma.js';</script>
+        <script type="text/javascript" src="../alooma-jslib-snippet.js"></script>
         <script type="text/javascript">
             // Test that the base lib is correctly initialized
-            mixpanel.init("4874fb5a6ac20d3c883349defcfb9c99",
+            alooma.init("4874fb5a6ac20d3c883349defcfb9c99",
             {
                 cookie_name: "test",
                 reset_cookie: true,
                 debug: true,
-                loaded: function(mixpanel) {
+                loaded: function(alooma) {
                     test('Existing array parsed', 1, function() {
-                        same(mixpanel.cookie.props.test_value, value, "Initial super property was set correctly");
+                        same(alooma.cookie.props.test_value, value, "Initial super property was set correctly");
                     });
                     test('People array parsed', 1, function() {
-                        same(mixpanel.people.val_to_change, 42, "Function pushed onto people array was called");
+                        same(alooma.people.val_to_change, 42, "Function pushed onto people array was called");
                     });
                 }
             });
@@ -43,7 +43,7 @@
             // Test that additional libs are correctly initialized
             var val2 = Math.random();
             var lib_loaded = false, vals_preinited = false;
-            mixpanel.init("76ftyh",
+            alooma.init("76ftyh",
             {
                 cookie_name: "test_additional",
                 reset_cookie: true,
@@ -58,7 +58,7 @@
                             same(instance.people.val_to_change, 41, "Function pushed onto people array was called");
                         });
                     }
-                    instance.set_config({api_host: 'https://api.mixpanel.com'});
+                    instance.set_config({api_host: 'https://api.alooma.com'});
                     test('Setting api_host to https in init callback works', function() {
                         stop();
                         instance.track("some event", {}, function(response) {
@@ -69,17 +69,17 @@
                 }
             }, "additional");
             if (!lib_loaded) {
-                mixpanel.additional.register({ 'test val 1': val2 });
-                mixpanel.additional.people.push(function() { this.val_to_change = 41 });
+                alooma.additional.register({ 'test val 1': val2 });
+                alooma.additional.people.push(function() { this.val_to_change = 41 });
             }
             vals_preinited = true;
 
             // Have to save these now, because qunit doesn't actually run until much later.
             var later_tests = [
-                [mixpanel.toString(), "mixpanel (stub)"],
-                [mixpanel.people.toString(), "mixpanel.people (stub)"],
-                [mixpanel.additional.toString(), "mixpanel.additional (stub)"],
-                [mixpanel.additional.people.toString(), "mixpanel.additional.people (stub)"]
+                [alooma.toString(), "alooma (stub)"],
+                [alooma.people.toString(), "alooma.people (stub)"],
+                [alooma.additional.toString(), "alooma.additional (stub)"],
+                [alooma.additional.people.toString(), "alooma.additional.people (stub)"]
             ];
 
             if (!lib_loaded) {
@@ -91,8 +91,8 @@
             }
 
             QUnit.done = function(details) {
-                mixpanel.cookie.clear();
-                mixpanel.additional.cookie.clear();
+                alooma.cookie.clear();
+                alooma.additional.cookie.clear();
             };
         </script>
     </body>

@@ -16,8 +16,8 @@
         <h2 id="qunit-userAgent"></h2>
         <ol id="qunit-tests"></ol>
         <div id="qunit-fixture"></div>
-        <script>window.MIXPANEL_CUSTOM_LIB_URL = '../mixpanel.js';</script>
-        <script type="text/javascript" src="../mixpanel-jslib-snippet.js"></script>
+        <script>window.ALOOMA_CUSTOM_LIB_URL = '../alooma.js';</script>
+        <script type="text/javascript" src="../alooma-jslib-snippet.js"></script>
         <script type="text/javascript">
             function redirect(url) {
                 if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)){
@@ -36,17 +36,17 @@
             }
             $('#qunit-tests').addClass('hidepass')
 
-            mixpanel.init("MIXPANEL_TOKEN",
+            alooma.init("ALOOMA_TOKEN",
             {
                 cookie_name: "test",
                 reset_cookie: true,
                 debug: true,
-                loaded: function(mixpanel) {
-                    test_mixpanel(mixpanel);
+                loaded: function(alooma) {
+                    test_alooma(alooma);
                 }
             });
 
-            test_async(mixpanel);
+            test_async(alooma);
         </script>
     </body>
 </html>

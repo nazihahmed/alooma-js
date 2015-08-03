@@ -1,8 +1,8 @@
 {
-  "name": "mixpanel-js",
+  "name": "alooma-js",
   "version": "1.0.0",
-  "description": "The official Mixpanel JavaScript browser client library",
-  "main": "mixpanel.js",
+  "description": "The official Alooma JavaScript browser client library",
+  "main": "alooma.js",
   "directories": {
     "test": "tests"
   },
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mixpanel/mixpanel-js.git"
+    "url": "https://github.com/Aloomaio/alooma-js.git"
   },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/mixpanel/mixpanel-js/issues"
+    "url": "https://github.com/Aloomaio/alooma-js/issues"
   },
-  "homepage": "https://github.com/mixpanel/mixpanel-js",
+  "homepage": "https://github.com/Aloomaio/alooma-js",
   "devDependencies": {
     "cookie-parser": "^1.3.4",
     "express": "^4.12.2",
