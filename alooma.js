@@ -2351,7 +2351,7 @@ Globals should be all caps
      * @param {Object} [properties] A set of properties to include with the event you're sending. These describe the user who did the event or details about the event itself.
      * @param {Function} [callback] If provided, the callback function will be called after tracking the event.
      */
-    AloomaLib.prototype.track = function(event_name, properties, callback) {
+    AloomaLib.prototype.track = function(event_name, event_object, callback) {
         if (typeof(event_name) === "undefined") {
             console.error("No event name provided to alooma.track");
             return;
@@ -2365,7 +2365,7 @@ Globals should be all caps
         }
 
         // set defaults
-        properties = properties || {};
+        properties = {};
         properties['token'] = this.get_config('token');
 
         // update persistence
@@ -2385,11 +2385,9 @@ Globals should be all caps
             , this['persistence'].properties()
             , properties
         );
-
-        var data = {
-              'event': event_name
-            , 'properties': properties
-        };
+        var data = event_object || {};
+        data['event'] = event_name;
+        data['properties'] = properties;
 
         var truncated_data  = _.truncate(data, 255)
             , json_data     = _.JSONEncode(truncated_data)
