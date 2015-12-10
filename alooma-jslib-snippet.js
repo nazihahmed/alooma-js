@@ -4,7 +4,7 @@
 // ==/ClosureCompiler==
 
 /** @define {string} */
-var ALOOMA_LIB_URL = '//cdn.alooma.com/libs/alooma-latest.min.js';
+var ALOOMA_LIB_URL = '//cdn.alooma.com/alooma-latest.min.js';
 
 (function(document, alooma){
     // Only stub out if this is the first time running the snippet.
