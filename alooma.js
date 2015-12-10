@@ -2365,7 +2365,7 @@ Globals should be all caps
         }
 
         // set defaults
-        properties = {};
+        properties = event_object || {};
         properties['token'] = this.get_config('token');
 
         // update persistence
@@ -2385,7 +2385,7 @@ Globals should be all caps
             , this['persistence'].properties()
             , properties
         );
-        var data = event_object || {};
+        var data = {};
         data['event'] = event_name;
         data['properties'] = properties;
 
