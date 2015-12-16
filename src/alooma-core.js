@@ -2475,13 +2475,6 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
       }
       properties['token'] = this.get_config('token');
 
-      // set $duration if time_event was previously called for this event
-      var start_timestamp = this['persistence'].remove_event_timer(event_name);
-      if (!_.isUndefined(start_timestamp)) {
-          var duration_in_ms = new Date().getTime() - start_timestamp;
-          properties['$duration'] = parseFloat((duration_in_ms / 1000).toFixed(3));
-      }
-
       // update persistence
       this['persistence'].update_search_keyword(document.referrer);
 
