@@ -1,0 +1,1 @@
+../../build/alooma.cjs.js
