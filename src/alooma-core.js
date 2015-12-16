@@ -2455,8 +2455,7 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
 };
 
 /**
-     * Track a custom event. This is the most important and
-     * frequently used Alooma function.
+     * Track a custom event.
      *
      * ### Usage:
      *
@@ -2469,51 +2468,65 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
      * @param {Function} [callback] If provided, the callback function will be called after tracking the event.
      */
     AloomaLib.prototype.track_custom_event = function(event_object, callback) {
-        if (_.isBlockedUA(userAgent)
-        ||  this._flags.disable_all_events
-        ||  _.include(this.__disabled_events, event_name)) {
-            if (typeof(callback) !== 'undefined') { callback(0); }
-            return;
-        }
+      // set defaults
+      var properties = {};
+      if (event_object) {
+        properties = event_object['properties'] || {};
+      }
+      properties['token'] = this.get_config('token');
 
-        // set defaults
-        properties = {};
-        properties['token'] = this.get_config('token');
+      // set $duration if time_event was previously called for this event
+      var start_timestamp = this['persistence'].remove_event_timer(event_name);
+      if (!_.isUndefined(start_timestamp)) {
+          var duration_in_ms = new Date().getTime() - start_timestamp;
+          properties['$duration'] = parseFloat((duration_in_ms / 1000).toFixed(3));
+      }
 
-        // update persistence
-        this['persistence'].update_search_keyword(document.referrer);
+      // update persistence
+      this['persistence'].update_search_keyword(document.referrer);
 
-        if (this.get_config('store_google')) { this['persistence'].update_campaign_params(); }
-        if (this.get_config('save_referrer')) { this['persistence'].update_referrer_info(document.referrer); }
+      if (this.get_config('store_google')) { this['persistence'].update_campaign_params(); }
+      if (this.get_config('save_referrer')) { this['persistence'].update_referrer_info(document.referrer); }
 
-        // note: extend writes to the first object, so lets make sure we
-        // don't write to the persistence properties object and info
-        // properties object by passing in a new object
+      // note: extend writes to the first object, so lets make sure we
+      // don't write to the persistence properties object and info
+      // properties object by passing in a new object
 
-        // update properties with pageview info and super-properties
-        properties = _.extend(
-            {}
-            , _.info.properties()
-            , this['persistence'].properties()
-            , properties
-        );
-        var data = event_object || {};
-        data['properties'] = properties;
+      // update properties with pageview info and super-properties
 
-        var truncated_data  = _.truncate(data, 255)
-            , json_data     = _.JSONEncode(truncated_data)
-            , encoded_data  = _.base64Encode(json_data);
+      properties = _.extend(
+          {}
+          , _.info.properties()
+          , this['persistence'].properties()
+          , properties
+      );
 
-        console.log("ALOOMA REQUEST:");
-        console.log(truncated_data);
+      var property_blacklist = this.get_config('property_blacklist');
+      if (_.isArray(property_blacklist)) {
+          _.each(property_blacklist, function(blacklisted_prop) {
+              delete properties[blacklisted_prop];
+          });
+      } else {
+          console.error('Invalid value for property_blacklist config: ' + property_blacklist);
+      }
 
-        this._send_request(
-            this.get_config('api_host') + "/track/",
-            { 'data': encoded_data },
-            this._prepare_callback(callback, truncated_data)
-        );
+      var data = event_object || {};
+      data['properties'] = properties;
 
-        return truncated_data;
+      var truncated_data  = _.truncate(data, 255)
+          , json_data     = _.JSONEncode(truncated_data)
+          , encoded_data  = _.base64Encode(json_data);
+
+      console.log("ALOOMA REQUEST:");
+      console.log(truncated_data);
+
+      this._send_request(
+          this.get_config('api_host') + "/track/",
+          { 'data': encoded_data },
+          this._prepare_callback(callback, truncated_data)
+      );
+
+      return truncated_data;
     };
 
 /**
@@ -4698,6 +4711,7 @@ AloomaLib.prototype['init']                            = AloomaLib.prototype.ini
 AloomaLib.prototype['disable']                         = AloomaLib.prototype.disable;
 AloomaLib.prototype['time_event']                      = AloomaLib.prototype.time_event;
 AloomaLib.prototype['track']                           = AloomaLib.prototype.track;
+AloomaLib.prototype['track_custom_event']               = AloomaLib.prototype.track_custom_event;
 AloomaLib.prototype['track_links']                     = AloomaLib.prototype.track_links;
 AloomaLib.prototype['track_forms']                     = AloomaLib.prototype.track_forms;
 AloomaLib.prototype['track_pageview']                  = AloomaLib.prototype.track_pageview;

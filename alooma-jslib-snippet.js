@@ -53,7 +53,7 @@ var ALOOMA_LIB_URL = '//cdn.alooma.com/libs/alooma-latest.min.js';
 
             // create shallow clone of the public alooma interface
             // Note: only supports 1 additional level atm, e.g. alooma.people.set, not alooma.people.set.do_something_else.
-            functions = "disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(' ');
+            functions = "disable time_event track track_custom_event track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(' ');
             for (i = 0; i < functions.length; i++) {
                 _set_and_defer(target, functions[i]);
             }
