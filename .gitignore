@@ -2,3 +2,4 @@ node_modules
 compiler.jar
 .idea
 *.ps1
+*.bundle.js

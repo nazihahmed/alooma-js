@@ -2,27 +2,30 @@
   "name": "alooma-js",
   "version": "1.0.0",
   "description": "The official Alooma JavaScript browser client library",
-  "main": "alooma.js",
+  "main": "build/alooma.cjs.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "test": "echo 'Browse to localhost:3000/tests'",
-    "start": "node testServer.js"
+    "start": "pushd examples; python -m SimpleHTTPServer; popd",
+    "test": "echo 'Browse to localhost:3000/tests' && node testServer.js"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Aloomaio/alooma-js.git"
+    "url": "https://github.com/aloomaio/alooma-js.git"
   },
   "author": "",
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/Aloomaio/alooma-js/issues"
+    "url": "https://github.com/aloomaio/alooma-js/issues"
   },
-  "homepage": "https://github.com/Aloomaio/alooma-js",
   "devDependencies": {
+    "babelify": "^6.1.2",
+    "browserify": "^10.2.4",
     "cookie-parser": "^1.3.4",
     "express": "^4.12.2",
-    "morgan": "^1.5.2"
+    "morgan": "^1.5.2",
+    "rollup": "^0.16.4",
+    "webpack": "^1.12.2"
   }
 }

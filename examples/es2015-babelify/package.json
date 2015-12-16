@@ -1,0 +1,16 @@
+{
+  "name": "alooma-es2015-babelify",
+  "version": "1.0.0",
+  "description": "Alooma example: ES2015 Modules/Babelify",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify index.js -t [ babelify --compact false ] --outfile bundle.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "dev@alooma.com",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "babelify": "^6.1.2",
+    "browserify": "^10.2.4"
+  }
+}

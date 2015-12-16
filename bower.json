@@ -1,11 +1,11 @@
 {
   "name": "alooma",
-  "homepage": "https://github.com/Aloomaio/alooma-js",
+  "homepage": "https://github.com/alooma-io/alooma-js",
   "description": "Alooma JavaScript Library",
   "main": "alooma-jslib-snippet.js",
   "repository": {
     "type": "git",
-    "url": "git@github.com:Aloomaio/alooma-js.git"
+    "url": "git@github.com:aloomaio/alooma-js.git"
   },
   "keywords": [
     "alooma",
@@ -14,6 +14,7 @@
   ],
   "license": "Apache-2.0",
   "ignore": [
-    "tests"
+    "tests",
+    "vendor"
   ]
 }

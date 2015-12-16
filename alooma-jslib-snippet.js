@@ -4,7 +4,7 @@
 // ==/ClosureCompiler==
 
 /** @define {string} */
-var ALOOMA_LIB_URL = '//cdn.alooma.com/alooma-latest.min.js';
+var ALOOMA_LIB_URL = '//cdn.alooma.com/libs/alooma-latest.min.js';
 
 (function(document, alooma){
     // Only stub out if this is the first time running the snippet.
@@ -53,7 +53,7 @@ var ALOOMA_LIB_URL = '//cdn.alooma.com/alooma-latest.min.js';
 
             // create shallow clone of the public alooma interface
             // Note: only supports 1 additional level atm, e.g. alooma.people.set, not alooma.people.set.do_something_else.
-            functions = "disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(' ');
+            functions = "disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(' ');
             for (i = 0; i < functions.length; i++) {
                 _set_and_defer(target, functions[i]);
             }
@@ -69,7 +69,13 @@ var ALOOMA_LIB_URL = '//cdn.alooma.com/alooma-latest.min.js';
         script.type = "text/javascript";
         script.async = true;
 
-        script.src = typeof ALOOMA_CUSTOM_LIB_URL !== 'undefined' ? ALOOMA_CUSTOM_LIB_URL : ALOOMA_LIB_URL;
+        if (typeof ALOOMA_CUSTOM_LIB_URL !== 'undefined') {
+            script.src = ALOOMA_CUSTOM_LIB_URL;
+        } else if (document.location.protocol === 'file:' && ALOOMA_LIB_URL.match(/^\/\//)) {
+            script.src = 'https:' + ALOOMA_LIB_URL;
+        } else {
+            script.src = ALOOMA_LIB_URL;
+        }
 
         first_script = document.getElementsByTagName("script")[0];
         first_script.parentNode.insertBefore(script, first_script);

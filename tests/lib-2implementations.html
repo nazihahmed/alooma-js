@@ -4,6 +4,10 @@
         <link rel="stylesheet" href="vendor/qunit.css" type="text/css" media="screen">
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
         <script type="text/javascript" src="vendor/jquery.qunit.js?v=159"></script>
+        <script>
+            // load test cases before telling QUnit to start to avoid race conditions
+            QUnit.config.autostart = false;
+        </script>
         <script type="text/javascript" src="vendor/sinon.js?v=159"></script>
         <script type="text/javascript" src="vendor/underscore.js"></script>
         <script type="text/javascript" src="test.js"></script>
@@ -19,7 +23,7 @@
         <script type="text/javascript">
             var value = Math.random();
             var alooma = [['register', { 'test_value': value }]];
-            a.people = [function() { this.val_to_change = 42; }];
+            alooma.people = [function() { this.val_to_change = 42; }];
         </script>
         <script>window.ALOOMA_CUSTOM_LIB_URL = '../alooma.js';</script>
         <script type="text/javascript" src="../alooma-jslib-snippet.js"></script>
@@ -66,6 +70,8 @@
                             start();
                         });
                     });
+
+                    QUnit.start();
                 }
             }, "additional");
             if (!lib_loaded) {

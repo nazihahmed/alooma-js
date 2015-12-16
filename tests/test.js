@@ -1,5 +1,7 @@
 (function() {
 
+var alooma; // don't use window.alooma, use instance passed to test_alooma()
+
 var old_onload = window.onload;
 var old_handler_run = false;
 window.onload = function() {
@@ -10,6 +12,7 @@ window.onload = function() {
 
 var _jsc = [];
 var mpmodule = function(module_name, extra_setup, extra_teardown) {
+
     module(module_name, {
         setup: function() {
             this.token = rand_name();
@@ -31,6 +34,18 @@ var mpmodule = function(module_name, extra_setup, extra_teardown) {
                 _jsc = _.uniq(_jsc.concat(_.keys(alooma.test._jsc)));
                 clearLibInstance(alooma.test);
             }
+
+            // Necessary because the alias tests can't clean up after themselves, as there is no callback.
+            _.each(document.cookie.split(';'), function(c) {
+                var name = c.split('=')[0].replace(/^\s+|\s+$/g, '');
+                if (name.match(/mp_test_\d+_alooma$/)) {
+                    if (window.console) {
+                        console.log("removing cookie:", name);
+                    }
+                    cookie.remove(name);
+                    cookie.remove(name, true);
+                }
+            });
 
             if (extra_teardown) { extra_teardown.call(this); }
         }
@@ -160,15 +175,19 @@ var cookie = {
     }
 };
 
-var wait = function(condition, callback, error_timeout) {
-    var start = new Date().getTime();
-    var f = function() {
-        if (typeof(error_timeout) !== "undefined" && new Date().getTime() - start >= error_timeout) { return callback(true); }
-
-        if (!condition()) { setTimeout(f, 100); }
-        else { callback(false); }
-    }
-    f();
+var untilDone = function(func) {
+    var timeout = setTimeout(function() {
+        ok(false, 'timed out');
+        start();
+    }, 5000);
+    var interval;
+    interval = setInterval(function() {
+        func(function() {
+            clearTimeout(timeout);
+            clearInterval(interval);
+            start();
+        });
+    }, 20);
 };
 
 function simulateEvent(element, type) {
@@ -204,10 +223,12 @@ function date_to_ISO(d) {
         + pad(d.getUTCSeconds());
 }
 
-window.test_async = function() {
+window.test_async = function(alooma_test_lib) {
     /* Tests for async/snippet behavior (prior to load).
      * Make sure we re-order args, etc.
      */
+
+    alooma = alooma_test_lib;
 
     var test1 = {
         id: "asjief32f",
@@ -219,6 +240,7 @@ window.test_async = function() {
         this.persistence.clear();
     });
 
+    alooma.time_event('test');
     alooma.track('test', {}, function(response, data) {
         test1.properties = data.properties;
     });
@@ -230,14 +252,15 @@ window.test_async = function() {
     if (!lib_loaded) {
         module("async tracking");
 
-            test("priority functions", 2, function() {
-                stop();
-
-                wait(function() { return test1.properties !== null; }, function() {
-                    var p = test1.properties;
-                    same(p.mp_name_tag, test1.name, "name_tag should fire before track");
-                    same(p.distinct_id, test1.id, "identify should fire before track");
-                    start();
+            asyncTest("priority functions", 3, function() {
+                untilDone(function(done) {
+                    if (test1.properties !== null) {
+                        var p = test1.properties;
+                        same(p.mp_name_tag, test1.name, "name_tag should fire before track");
+                        same(p.distinct_id, test1.id, "identify should fire before track");
+                        ok(!_.isUndefined(p.$duration), "duration should be set");
+                        done();
+                    }
                 });
             });
     } else {
@@ -246,11 +269,13 @@ window.test_async = function() {
     }
 };
 
-window.test_alooma = function(alooma) {
+window.test_alooma = function(alooma_test_lib) {
 
 /* Tests to run once the lib is loaded on the page.
  */
 setTimeout( function() {
+
+alooma = alooma_test_lib;
 
 module("onload handler preserved");
     test("User Onload handlers are preserved", 1, function() {
@@ -300,24 +325,45 @@ mpmodule("alooma.track");
             result.push(2);
         });
 
-        setTimeout(function() {
-            function i(n) { return _.include(result, n); }
-            ok(i(1) && i(2), 'both callbacks executed.');
-            start();
-        }, 3000);
+        untilDone(function(done) {
+            function i (n) {
+                return _.include(result, n);
+            }
+
+            if (i(1) && i(2)) {
+                ok('both callbacks executed.');
+                done();
+            }
+        });
     });
 
     test("ip is honored", 2, function() {
-        alooma.test.set_config({ img: true });
+        alooma.test.set_config({img: true});
         alooma.test.track("ip enabled");
 
         var with_ip = $('img').get(-1);
-        alooma.test.set_config({ ip: 0 });
+        alooma.test.set_config({ip: 0});
         alooma.test.track("ip disabled");
         var without_ip = $('img').get(-1);
 
         ok(with_ip.src.indexOf('ip=1') > 0, '_send_request should send ip=1 by default');
         ok(without_ip.src.indexOf('ip=0') > 0, '_send_request should send ip=0 when the config ip=false');
+    });
+
+    test("properties on blacklist are not sent", 4, function() {
+        alooma.test.set_config({
+            property_blacklist: ['$current_url', '$referrer', 'blacklisted_custom_prop']
+        });
+
+        var data = alooma.test.track('test', {
+            blacklisted_custom_prop: 'foo',
+            other_custom_prop: 'bar'
+        });
+
+        isUndefined(data.properties.$current_url, 'Blacklisted default prop should be removed');
+        isUndefined(data.properties.$referrer, 'Blacklisted default prop should be removed');
+        isUndefined(data.properties.blacklisted_custom_prop, 'Blacklisted custom prop should be removed');
+        same(data.properties.other_custom_prop, 'bar', 'Non-blacklisted custom prop should not be removed');
     });
 
     test("disable() disables all tracking from firing", 2, function() {
@@ -366,7 +412,7 @@ mpmodule("alooma.track");
 
         stop();
 
-        alooma.test.set_config({ img: true });
+        alooma.test.set_config({img: true});
         alooma.test.track("image tracking");
 
         if (window.console) {
@@ -378,10 +424,11 @@ mpmodule("alooma.track");
             }, "dom tracking should be disabled");
         }
 
-        wait(function() { return initial_image_count + 1 == $('img').length; }, function(timeout_fired) {
-            notOk(timeout_fired, "image tracking added an image to the page");
-            start();
-        }, 10000);
+        untilDone(function(done) {
+            if (initial_image_count + 1 === $('img').length) {
+                done();
+            }
+        });
     });
 
     test("should truncate properties to 255 characters", 7, function() {
@@ -412,6 +459,19 @@ mpmodule("alooma.track");
 
         same(data.properties.$screen_height, screen.height);
         same(data.properties.$screen_width, screen.width);
+    });
+
+mpmodule("alooma.time_event", function () {
+    this.clock = sinon.useFakeTimers();
+}, function () {
+    this.clock.restore();
+});
+
+    test("it sets $duration to the elapsed time between time_event and track", 1, function() {
+        alooma.test.time_event('test');
+        this.clock.tick(123);
+        var data = alooma.test.track('test');
+        same(data.properties.$duration, 0.123);
     });
 
 mpmodule("json");
@@ -854,8 +914,8 @@ mpmodule("alooma");
         clearLibInstance(alooma.mpl3);
     });
 
-    test("info properties included", 6, function() {
-        var info_props = "$os $browser $browser_version $referrer $referring_domain mp_lib".split(' ');
+    test("info properties included", 7, function() {
+        var info_props = "$os $browser $current_url $browser_version $referrer $referring_domain mp_lib".split(' ');
 
         var data = alooma.test.track("check info props");
         _.each(info_props, function(prop) {
@@ -893,6 +953,14 @@ mpmodule("alooma");
         alooma.test.persistence.update_referrer_info(ref);
         equal(alooma.test.persistence.props[i_ref], ref, "Full referrer should be saved");
         equal(alooma.test.persistence.props[i_ref_d], "exaalooma.testle.com", "Just domain should be saved");
+    });
+
+    test("current url set correctly", 2, function() {
+        var current_url = "$current_url";
+        var event = alooma.test.track("check current url");
+        var props = event.properties;
+        ok(current_url in props, "current url in props");
+        equal(props[current_url], window.location.href, "current url is properly set");
     });
 
     test("set_config", 2, function() {
@@ -1290,42 +1358,46 @@ xhrmodule("alooma._check_and_handle_notifications");
             var num_scripts = $('script').length;
             alooma.test._check_and_handle_notifications(this.id);
             stop();
-            setTimeout(function() {
-                same($('script').length, num_scripts + 1, "_check_and_handle_notifications should have fired off a request");
-                start();
-            }, 500);
+            untilDone(function(done) {
+                if ($('script').length === num_scripts + 1) {
+                    ok("_check_and_handle_notifications fired off a request")
+                    done();
+                }
+            });
         });
 
-        test("notifications are never checked again after identify()", 2, function() {
+        asyncTest("notifications are never checked again after identify()", 2, function() {
             var num_scripts = $('script').length;
             alooma.test.identify(this.id);
-            stop();
-            setTimeout(function() {
-                ok($('script').length >= num_scripts + 1, "identify should have fired off a request");
+            untilDone(function(done) {
+                if ($('script').length >= num_scripts + 1) {
+                    ok("identify fired off a request");
 
-                num_scripts = $('script').length;
-                alooma.test._check_and_handle_notifications(this.id);
-                alooma.test._check_and_handle_notifications(this.id);
-                alooma.test._check_and_handle_notifications(this.id);
-                alooma.test._check_and_handle_notifications(this.id);
-                alooma.test._check_and_handle_notifications(this.id);
-                setTimeout(function() {
-                    same($('script').length, num_scripts, "_check_and_handle_notifications after identify should not make requests");
-                    start();
-                }, 500);
-            }, 500);
+                    num_scripts = $('script').length;
+                    alooma.test._check_and_handle_notifications(this.id);
+                    alooma.test._check_and_handle_notifications(this.id);
+                    alooma.test._check_and_handle_notifications(this.id);
+                    alooma.test._check_and_handle_notifications(this.id);
+                    alooma.test._check_and_handle_notifications(this.id);
+                    setTimeout(function() {
+                        same($('script').length, num_scripts, "_check_and_handle_notifications after identify should not make requests");
+                        done();
+                    }, 500); // TODO: remove the 500 ms wait
+                }
+            });
         });
 
-        test("_check_and_handle_notifications honors disable_notifications config", 1, function() {
+        asyncTest("_check_and_handle_notifications honors disable_notifications config", 1, function() {
             var num_scripts = $('script').length;
             alooma.test.set_config({disable_notifications: true});
             alooma.test._check_and_handle_notifications(this.id);
             alooma.test.set_config({disable_notifications: false});
-            stop();
-            setTimeout(function() {
-                same($('script').length, num_scripts, "_check_and_handle_notifications should not have fired off a request");
-                start();
-            }, 500);
+            untilDone(function(done) {
+                if ($('script').length === num_scripts) {
+                    ok("_check_and_handle_notifications did not fire off a request");
+                    done();
+                }
+            });
         });
     }
 
@@ -1826,7 +1898,6 @@ mpmodule("alooma.people flushing");
     test("identify does not make a request if nothing is queued", 1, function() {
         var num_scripts = $('script').length;
         alooma.test.identify(this.id);
-
         stop();
         setTimeout(function() {
             // notification check results in extra script tag when !USE_XHR
@@ -1880,11 +1951,13 @@ mpmodule("in-app notification display");
             body: "notification body test",
             title: "hallo"
         });
-        setTimeout(function() {
-            same($('#alooma-notification-takeover').length, 1);
-            $('#alooma-notification-wrapper').remove();
-            start();
-        }, 2000);
+        untilDone(function(done) {
+            if ($('#alooma-notification-takeover').length === 1) {
+                $('#alooma-notification-wrapper').remove();
+                ok('success');
+                done();
+            }
+        });
     });
 
     asyncTest("mini notification with normal data adds itself to DOM", 1, function() {
@@ -1892,23 +1965,26 @@ mpmodule("in-app notification display");
             body: "notification body test",
             type: "mini"
         });
-        setTimeout(function() {
-            same($('#alooma-notification-mini').length, 1);
-            $('#alooma-notification-wrapper').remove();
-            start();
-        }, 2000);
+        untilDone(function(done) {
+            if ($('#alooma-notification-mini').length === 1) {
+                $('#alooma-notification-wrapper').remove();
+                ok('success');
+                done();
+            }
+        });
     });
 
-    asyncTest("notification does not show when images don't load", 1, function() {
+    test("notification does not show when images don't load", 1, function() {
         alooma._show_notification({
             body: "bad image body test",
             image_url: "http://notgonna.loadever.com/blablabla",
             title: "bad image title"
         });
+        stop();
         setTimeout(function() {
-            same($('#alooma-notification-takeover').length, 0);
+            ok($('#alooma-notification-takeover').length === 0);
             start();
-        }, 2000);
+        }, 500);
     });
 
     test("calling _show_notification with bad data does not halt execution", 1, function() {
@@ -1920,17 +1996,18 @@ mpmodule("in-app notification display");
         ok(true);
     });
 
-    asyncTest("notification prevents script injection", 2, function() {
+    asyncTest("notification prevents script injection", 1, function() {
         alooma._show_notification({
             body: 'injection test</div><img src="nope" onerror="window.injectedvar=42;"/>',
             title: "bad image title"
         });
-        setTimeout(function() {
-            same($('#alooma-notification-takeover').length, 1);
-            $('#alooma-notification-wrapper').remove();
-            ok(_.isUndefined(window.injectedvar), 'window.injectedvar should not exist');
-            start();
-        }, 2000);
+        untilDone(function(done) {
+            if ($('#alooma-notification-takeover').length === 1) {
+                $('#alooma-notification-wrapper').remove();
+                ok(_.isUndefined(window.injectedvar), 'window.injectedvar should not exist');
+                done();
+            }
+        });
     });
 
 mpmodule("verbose output");
@@ -2130,20 +2207,6 @@ if (USE_XHR) {
             this.requests[0].respond(500, { 'Content-Length': resp.length }, resp);
         });
 }
-
-// Necessary because the alias tests can't clean up after themselves, as there is no callback.
-setTimeout(function() {
-    _.each(document.cookie.split(';'), function(c) {
-        var name = c.split('=')[0].replace(/^\s+|\s+$/g, '');
-        if (name.match(/mp_test_\d+_alooma$/)) {
-            if (window.console) {
-                console.log("removing cookie:", name);
-            }
-            cookie.remove(name);
-            cookie.remove(name, true);
-        }
-    });
-}, 5000);
 
 }, 10);
 };

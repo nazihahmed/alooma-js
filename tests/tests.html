@@ -17,25 +17,10 @@
         <ol id="qunit-tests"></ol>
         <div id="qunit-fixture"></div>
         <script>window.ALOOMA_CUSTOM_LIB_URL = '../alooma.js';</script>
+        <script type="text/javascript" src="redirect-unless-referrer.js"></script>
         <script type="text/javascript" src="../alooma-jslib-snippet.js"></script>
-        <script type="text/javascript">
-            function redirect(url) {
-                if (/MSIE (\d+\.\d+);/.test(navigator.userAgent)){
-                    var referLink = document.createElement('a');
-                    referLink.href = url;
-                    document.body.appendChild(referLink);
-                    referLink.click();
-                } else {
-                    window.location = url;
-                }
-            }
-
-            if (!document.referrer) {
-                // force referrer for tests
-                redirect(window.location + "?ref");
-            }
+        <script>
             $('#qunit-tests').addClass('hidepass')
-
             alooma.init("ALOOMA_TOKEN",
             {
                 cookie_name: "test",
