@@ -2455,6 +2455,68 @@ AloomaLib.prototype.track = function(event_name, properties, callback) {
 };
 
 /**
+     * Track a custom event. This is the most important and
+     * frequently used Alooma function.
+     *
+     * ### Usage:
+     *
+     *     // track a custom event {"artist": "Carla Bruni", "song": "J'arrive à toi"}
+     *     alooma.track({"artist": "Carla Bruni", "song": "J'arrive à toi"});
+     *
+     * To track link clicks or form submissions, see track_links() or track_forms().
+     *
+     * @param {Object} [event_object] The custom event you're sending.
+     * @param {Function} [callback] If provided, the callback function will be called after tracking the event.
+     */
+    AloomaLib.prototype.track_custom_event = function(event_object, callback) {
+        if (_.isBlockedUA(userAgent)
+        ||  this._flags.disable_all_events
+        ||  _.include(this.__disabled_events, event_name)) {
+            if (typeof(callback) !== 'undefined') { callback(0); }
+            return;
+        }
+
+        // set defaults
+        properties = {};
+        properties['token'] = this.get_config('token');
+
+        // update persistence
+        this['persistence'].update_search_keyword(document.referrer);
+
+        if (this.get_config('store_google')) { this['persistence'].update_campaign_params(); }
+        if (this.get_config('save_referrer')) { this['persistence'].update_referrer_info(document.referrer); }
+
+        // note: extend writes to the first object, so lets make sure we
+        // don't write to the persistence properties object and info
+        // properties object by passing in a new object
+
+        // update properties with pageview info and super-properties
+        properties = _.extend(
+            {}
+            , _.info.properties()
+            , this['persistence'].properties()
+            , properties
+        );
+        var data = event_object || {};
+        data['properties'] = properties;
+
+        var truncated_data  = _.truncate(data, 255)
+            , json_data     = _.JSONEncode(truncated_data)
+            , encoded_data  = _.base64Encode(json_data);
+
+        console.log("ALOOMA REQUEST:");
+        console.log(truncated_data);
+
+        this._send_request(
+            this.get_config('api_host') + "/track/",
+            { 'data': encoded_data },
+            this._prepare_callback(callback, truncated_data)
+        );
+
+        return truncated_data;
+    };
+
+/**
  * Track a page view event, which is currently ignored by the server.
  * This function is called by default on page load unless the
  * track_pageview configuration variable is false.
