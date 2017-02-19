@@ -1,7 +1,7 @@
 # Alooma JavaScript Library
 The Alooma JavaScript Library is a set of methods attached to a global `Alooma` object
 intended to be used by websites wishing to send data to Alooma projects. A full reference
-is available [here](https://www.alooma.com/docs/javascript-sdk).
+is available [here](https://support.alooma.com/hc/en-us/articles/214522465-Javascript-SDK-integration).
 
 ## Alternative installation via Bower
 `alooma-js` is also available via front-end package manager [Bower](http://bower.io/). After installing Bower, fetch into your project's `bower_components` dir with:
