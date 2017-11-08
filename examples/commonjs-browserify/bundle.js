@@ -2703,7 +2703,6 @@ AloomaLib.prototype.identify = function(unique_id, _set_callback, _add_callback,
         this.unregister(ALIAS_ID_KEY);
         this._register_single('distinct_id', unique_id);
     }
-    this._check_and_handle_notifications(this.get_distinct_id());
     this._flags.identify_called = true;
     // Flush any queued up people requests
     this['people']._flush(_set_callback, _add_callback, _append_callback, _set_once_callback, _union_callback);
@@ -2901,37 +2900,6 @@ AloomaLib.prototype._event_is_disabled = function(event_name) {
     return _.isBlockedUA(userAgent)
         || this._flags.disable_all_events
         || _.include(this.__disabled_events, event_name);
-};
-
-AloomaLib.prototype._check_and_handle_notifications = function(distinct_id) {
-    if (!distinct_id || this._flags.identify_called || this.get_config('disable_notifications')) {
-        return;
-    }
-
-    console.log("ALOOMA NOTIFICATION CHECK");
-
-    var data = {
-        'verbose':     true,
-        'version':     '1',
-        'lib':         'web',
-        'token':       this.get_config('token'),
-        'distinct_id': distinct_id
-    };
-    var self = this;
-    this._send_request(
-        this.get_config('api_host') + '/decide/',
-        data,
-        this._prepare_callback(function(r) {
-            if (r['notifications'] && r['notifications'].length > 0) {
-                self._show_notification.call(self, r['notifications'][0]);
-            }
-        })
-    );
-};
-
-AloomaLib.prototype._show_notification = function(notification_data) {
-    var notification = new MPNotif(notification_data, this);
-    notification.show();
 };
 
 /**
@@ -4696,8 +4664,6 @@ AloomaLib.prototype['get_config']                      = AloomaLib.prototype.get
 AloomaLib.prototype['get_property']                    = AloomaLib.prototype.get_property;
 AloomaLib.prototype['get_distinct_id']                 = AloomaLib.prototype.get_distinct_id;
 AloomaLib.prototype['toString']                        = AloomaLib.prototype.toString;
-AloomaLib.prototype['_check_and_handle_notifications'] = AloomaLib.prototype._check_and_handle_notifications;
-AloomaLib.prototype['_show_notification']              = AloomaLib.prototype._show_notification;
 
 // AloomaPersistence Exports
 AloomaPersistence.prototype['properties']            = AloomaPersistence.prototype.properties;
@@ -4717,7 +4683,7 @@ AloomaPeople.prototype['clear_charges'] = AloomaPeople.prototype.clear_charges;
 AloomaPeople.prototype['delete_user']   = AloomaPeople.prototype.delete_user;
 AloomaPeople.prototype['toString']      = AloomaPeople.prototype.toString;
 
-_.safewrap_class(AloomaLib, ['identify', '_check_and_handle_notifications', '_show_notification']);
+_.safewrap_class(AloomaLib, ['identify']);
 
 var instances = {};
 var extend_mp = function() {

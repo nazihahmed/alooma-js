@@ -1,6 +1,6 @@
 {
   "name": "alooma-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The official Alooma JavaScript browser client library",
   "main": "build/alooma.cjs.js",
   "directories": {
